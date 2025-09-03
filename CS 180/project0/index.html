@@ -1,0 +1,353 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <!-- MathJax v3 for LaTeX rendering -->
+<script>
+  window.MathJax = {
+    tex: {
+      inlineMath: [['\\(','\\)']],  // 行内公式 \( ... \)
+      displayMath: [['\\[','\\]']]  // 块级公式 \[ ... \]
+    },
+    options: {
+      skipHtmlTags: ['script','noscript','style','textarea','pre','code'],
+      processHtmlClass: 'mathjax-process'
+    }
+  };
+</script>
+<script id="MathJax-script" defer
+  src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js">
+</script>
+
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>CS180 Computational Photography – Tell Stories with a Lens</title>
+  <link rel="stylesheet" href="style.css"/>
+  <script src="script.js" defer></script>
+  <!-- Typography -->
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&family=Montserrat:wght@400;600;700;800&display=swap" rel="stylesheet">
+</head>
+<body>
+
+  <!-- Top anchor nav -->
+  <nav class="top-nav" aria-label="Section Navigation">
+    <a href="#hero">Overview</a>
+    <a href="#part1">Part 1</a>
+    <a href="#part2">Part 2</a>
+    <a href="#part3">Part 3</a>
+  </nav>
+
+  <!-- HERO -->
+  <header class="hero-section" id="hero">
+    <div class="section-inner">
+      <div class="hero-content">
+        <h1>
+          <span>Innovating with</span><br/>
+          <span>Computational Photography</span>
+        </h1>
+        <p>
+          CS180 course project — exploring how distance, focal length, and perspective
+          transform stories on screen. From everyday selfies to cinematic illusions.
+        </p>
+      </div>
+    </div>
+    <button class="scroll-down-arrow" aria-label="Scroll to next section"></button>
+  </header>
+
+  <main>
+
+    <!-- ========================= PART 1 (final clean) ========================= -->
+    <section class="project-section" id="part1">
+      <div class="section-inner p1-modern">
+        <header class="p1-header">
+          <h2>Close vs. Step-Back &amp; Zoom</h2>
+          <p class="p1-lead">
+            Take a close selfie → distorted. Now step back several feet, zoom in, and match head size.
+            The second portrait should look better. Why?
+          </p>
+        </header>
+
+        <!-- five images in one compact row -->
+        <div class="p1-row" role="list">
+          <figure class="p1-shot" data-label="24mm">
+            <img src="images/24mm.png" alt="24mm close perspective exaggeration" loading="lazy">
+          </figure>
+          <figure class="p1-shot" data-label="35mm">
+            <img src="images/35mm.jpg" alt="35mm wider but gentler" loading="lazy">
+          </figure>
+          <figure class="p1-shot" data-label="50mm">
+            <img src="images/50mm.jpg" alt="50mm neutral baseline" loading="lazy">
+          </figure>
+          <figure class="p1-shot" data-label="85mm">
+            <img src="images/85mm.jpg" alt="85mm classic compression" loading="lazy">
+          </figure>
+          <figure class="p1-shot" data-label="135mm">
+            <img src="images/135mm.jpg" alt="135mm pronounced compression" loading="lazy">
+          </figure>
+        </div>
+
+        <!-- explanation row: SVG + concise reason -->
+        <div class="p1-explain">
+          <div class="p1-graphic">
+            <!-- SVG animation explaining "distance not focal length" -->
+            <svg viewBox="0 0 800 240" width="100%" height="auto" aria-label="Why stepping back fixes selfie distortion" role="img">
+              <style>
+                .bg{ fill:#f4f4f9 }
+                .grid line{ stroke:#ddd; stroke-width:1 }
+                .frame{ fill:none; stroke:#111; stroke-width:2 }
+                .cam .b{ fill:#111 } .cam .l{ fill:#111 }
+                .ray{ stroke:#0a0a0a; stroke-width:2; stroke-linecap:round }
+                .t{ font:600 12px/1 Montserrat,Roboto,sans-serif; fill:#111 }
+                .m{ opacity:.7 }
+              </style>
+              <rect class="bg" x="0" y="0" width="800" height="240" rx="8"/>
+              <g class="grid">
+                <line x1="120" y1="0" x2="120" y2="240"/><line x1="240" y1="0" x2="240" y2="240"/>
+                <line x1="360" y1="0" x2="360" y2="240"/><line x1="480" y1="0" x2="480" y2="240"/>
+                <line x1="600" y1="0" x2="600" y2="240"/><line x1="720" y1="0" x2="720" y2="240"/>
+              </g>
+              <g>
+                <rect class="frame" x="570" y="70" width="100" height="100" rx="2"/>
+                <circle cx="620" cy="120" r="38" fill="#888"/>
+              </g>
+              <g id="near" opacity="1">
+                <g class="cam" transform="translate(240,110)">
+                  <rect class="b" x="-28" y="-16" width="32" height="32" rx="3"/>
+                  <circle class="l" cx="8" cy="0" r="8"/>
+                </g>
+                <line class="ray" x1="248" y1="110" x2="570" y2="70"/>
+                <line class="ray" x1="248" y1="110" x2="570" y2="170"/>
+                <polygon points="248,110 530,20 530,200" fill="none" stroke="#111" stroke-width="1.5" stroke-dasharray="4 6" opacity=".7"/>
+                <text class="t" x="230" y="210">Close + wide</text>
+              </g>
+              <g id="far" opacity="0">
+                <g class="cam" transform="translate(100,110)">
+                  <rect class="b" x="-28" y="-16" width="32" height="32" rx="3"/>
+                  <circle class="l" cx="8" cy="0" r="8"/>
+                </g>
+                <line class="ray" x1="108" y1="110" x2="570" y2="70"/>
+                <line class="ray" x1="108" y1="110" x2="570" y2="170"/>
+                <polygon points="108,110 560,80 560,160" fill="none" stroke="#111" stroke-width="1.5" stroke-dasharray="4 6" opacity=".7"/>
+                <text class="t" x="80" y="210">Step back + zoom</text>
+              </g>
+              <text class="t m" x="570" y="58">Same on-screen head size</text>
+              <text class="t m" x="20" y="24">Perspective depends on distance, not focal length</text>
+              <animate xlink:href="#near" attributeName="opacity" values="1;0;1" dur="4s" repeatCount="indefinite"/>
+              <animate xlink:href="#far"  attributeName="opacity" values="0;1;0" dur="4s" repeatCount="indefinite"/>
+            </svg>
+          </div>
+          <p class="p1-notes">
+            <strong>Answer: Perspective depends on <em>camera-to-subject distance</em>.
+            Close distance exaggerates near features; stepping back equalizes ray angles.
+            The lens mainly sets framing—zooming just crops the field of view. So “back up + zoom”
+            keeps head size but fixes geometry.</strong>
+          </p>
+        </div>
+      </div>
+      <button class="scroll-down-arrow" aria-label="Scroll to next section"></button>
+    </section>
+
+   <!-- PART 2 — Distance vs. Compression (portrait comparator on the right) -->
+<section class="project-section" id="part2">
+  <div class="section-inner p2-portrait">
+    <!-- Replace this block inside Part 2's text column -->
+<div class="p2-text">
+  <h2 class="p2-title">
+    Architectural Perspective
+    <span class="sub">Berkeley Street — Distance vs. Compression</span>
+  </h2>
+
+  <p>
+    We repeated the selfie experiment in an urban setting on a Berkeley street: first, we stood far back and
+    <strong>zoomed in</strong> for a telephoto view; then we walked forward along the street and took a second photo
+    with <strong>no zoom (wide)</strong>, adjusting our position so the scene fills the frame to about the same size in both shots.
+  </p>
+
+  <h3>What to notice</h3>
+  <ul class="p2-points">
+    <li><strong>Tele / far (first photo):</strong> the layers of buildings, poles, and people appear <em>flattened / compressed</em>; distances feel shorter.</li>
+    <li><strong>Wide / close (second photo):</strong> depth feels expanded; nearby elements grow quickly while distant ones shrink; lines diverge more.</li>
+  </ul>
+
+  <h3>Why this happens (theory)</h3>
+  <p>
+    In the pinhole model the on-sensor size of an object of height \(h\) at distance \(d\) with focal length \(f\) is
+    \(\;s=\dfrac{f\,h}{d}\;\). For two scene layers (near \(d_1\), far \(d_2\)), their displayed size ratio is
+  </p>
+  <p class="formula">\[ \frac{s_1}{s_2} \;=\; \frac{f h / d_1}{f h / d_2} \;=\; \frac{d_2}{d_1}. \]</p>
+  <p>
+    The <em>focal length cancels</em> in the ratio: <strong>zoom only reframes</strong>; it does not change perspective.
+    What changes is the <strong>camera–scene distances</strong>. When you stand far away (telephoto), both \(d_1\) and \(d_2\) are large and
+    their ratio \(d_2/d_1\) moves closer to 1, so near and far layers project to more similar sizes → the street looks
+    <em>compressed</em>. When you move close (wide), \(d_1\) drops much more than \(d_2\); the ratio \(d_2/d_1\) grows, so the size contrast
+    between layers increases → depth <em>expands</em>.
+  </p>
+  <p>
+    The same story appears in parallax: image shift is roughly proportional to camera baseline and inversely proportional to depth
+    (disparity \( \propto \tfrac{B}{Z} \)). From far away, relative parallax between street layers is small; from up close, it is large.
+  </p>
+
+  <h3>Takeaway for the Berkeley scene</h3>
+  <ul class="p2-points">
+    <li><strong>Choose distance first:</strong> back up to tame perspective (compression for tele views), or move in to emphasize depth (wide views).</li>
+    <li><strong>Then set focal length:</strong> after changing distance, pick \(f\) so the main subject matches size across shots (framing), e.g.
+      \( f_{\text{tele}} \approx f_{\text{wide}} \cdot \dfrac{d_{\text{tele}}}{d_{\text{wide}}} \).</li>
+  </ul>
+
+  <p><strong>Assignment statement (restated):</strong> With the camera far and zoomed in, the <em>first</em> photo of the Berkeley street
+    will look <em>flatter / more compressed</em> than the <em>second</em> close, wide-angle photo — because increasing distance reduces the
+    near–far size ratio and parallax, not because of zoom itself.</p>
+</div>
+
+
+    <!-- 右侧纵向对比组件（保持交互） -->
+    <!-- 右侧：上=纵向对比器，下=物理动图 -->
+<div class="p2-visual">
+  <!-- 保留你的纵向对比组件（路径按需替换） -->
+  <div class="cmp-vert" aria-label="Compare wide/close vs. tele/step-back">
+    <figure class="cmp-img base">
+      <img src="images/distance.jpg" alt="Tele-compressed from a distance">
+      <figcaption>Tele · Step-back + zoom</figcaption>
+    </figure>
+    <figure class="cmp-img overlay">
+      <img src="images/close.jpg" alt="Wide-angle at close distance">
+      <figcaption>Wide · Close</figcaption>
+    </figure>
+    <input class="cmp-slider" type="range" min="0" max="100" value="50" aria-label="Reveal amount">
+    <div class="cmp-handle" aria-hidden="true"></div>
+  </div>
+
+  <!-- 物理动图：展示“近+广角” ↔ “远+变焦”，投影高度 s 一致，视场与距离变化 -->
+  <div class="p2-phys-anim" aria-label="Why distance, not focal length, sets perspective">
+    <svg viewBox="0 0 780 300" width="100%" height="auto" role="img">
+      <style>
+        .bg{ fill:#f4f4f9 }
+        .axis{ stroke:#111; stroke-width:1.5 }
+        .cone{ stroke:#111; stroke-width:1.5; stroke-dasharray:4 6; fill:none }
+        .ray{ stroke:#0b62c4; stroke-width:2; stroke-linecap:round }
+        .subj{ fill:#666 }
+        .near{ fill:#666 }
+        .far{ fill:#888 }
+        .cam{ fill:#111 }
+        .mark{ stroke:#111; stroke-width:2 }
+        .label{ font: 600 12px/1 Montserrat,Roboto,sans-serif; fill:#111 }
+        .muted{ opacity:.8 }
+      </style>
+
+      <!-- 背景与成像平面（两状态共用），s 标尺在同一位置以强调“投影高度一致” -->
+      <rect class="bg" x="0" y="0" width="780" height="300" rx="8"/>
+      <!-- 成像平面 -->
+      <line x1="180" y1="40" x2="180" y2="260" class="axis"/>
+      <!-- 投影高度 s：两条短刻度 & 文本 -->
+      <line x1="174" y1="110" x2="186" y2="110" class="mark"/>
+      <line x1="174" y1="190" x2="186" y2="190" class="mark"/>
+      <text class="label muted" x="190" y="154">s (same)</text>
+
+      <!-- 状态 A：近 + 广角（夸张） -->
+      <g id="stateA" opacity="1">
+        <!-- 相机 -->
+        <rect class="cam" x="130" y="136" width="30" height="30" rx="3"/>
+        <text class="label" x="118" y="132">close · wide</text>
+
+        <!-- 视场锥（更宽） -->
+        <path d="M180,150 L480,70 M180,150 L480,230" class="cone"/>
+
+        <!-- 场景：近层（路灯/同学）、远层（建筑） -->
+        <rect class="near" x="420" y="120" width="8" height="60" rx="2"/>
+        <circle class="subj" cx="520" cy="150" r="26"/>
+        <rect class="far"  x="660" y="90"  width="18" height="120" rx="2"/>
+
+        <!-- 投影光线：保证落在同一 s 刻度 -->
+        <line class="ray" x1="180" y1="110" x2="520" y2="124"/>
+        <line class="ray" x1="180" y1="190" x2="520" y2="176"/>
+
+        <!-- 距离标注 -->
+        <text class="label muted" x="450" y="168">d (near)</text>
+        <text class="label muted" x="675" y="168">d (far)</text>
+      </g>
+
+      <!-- 状态 B：远 + 变焦（压缩） -->
+      <g id="stateB" opacity="0">
+        <!-- 相机后退 -->
+        <rect class="cam" x="90" y="136" width="30" height="30" rx="3"/>
+        <text class="label" x="78" y="132">far · tele</text>
+
+        <!-- 视场锥（更窄） -->
+        <path d="M180,150 L640,120 M180,150 L640,180" class="cone"/>
+
+        <!-- 场景位置整体更远（同学 & 建筑），近远层间隔相对缩小 → 压缩感 -->
+        <rect class="near" x="560" y="130" width="8" height="40" rx="2"/>
+        <circle class="subj" cx="680" cy="150" r="26"/>
+        <rect class="far"  x="720" y="110" width="18" height="80" rx="2"/>
+
+        <!-- 投影光线：仍落在同一 s 刻度（匹配“画面中人像大小相同”） -->
+        <line class="ray" x1="180" y1="110" x2="680" y2="124"/>
+        <line class="ray" x1="180" y1="190" x2="680" y2="176"/>
+
+        <text class="label muted" x="600" y="168">d (near) ↑</text>
+        <text class="label muted" x="735" y="168">d (far) ↑</text>
+      </g>
+
+      <!-- 提示文字 -->
+      <text class="label muted" x="20" y="24">Perspective set by distance; zoom reframes. s fixed, d changes.</text>
+
+      <!-- 交替动画：A ↔ B（4 秒循环） -->
+      <animate xlink:href="#stateA" attributeName="opacity" values="1;0;1" dur="4s" repeatCount="indefinite"/>
+      <animate xlink:href="#stateB" attributeName="opacity" values="0;1;0" dur="4s" repeatCount="indefinite"/>
+    </svg>
+  </div>
+</div>
+
+
+  <button class="scroll-down-arrow" aria-label="Scroll to next section"></button>
+</section>
+
+
+   <!-- PART 3 — Hitchcock Zoom on the Berkeley Hills -->
+<section class="project-section" id="part3">
+  <div class="section-inner p3-wrap">
+
+    <!-- Title + short deck -->
+    <header class="p3-header">
+      <h2 class="p3-title">
+        The Hitchcock Zoom
+        <span class="sub">Dolly &amp; Zoom on the Berkeley Hills</span>
+      </h2>
+      <p class="p3-lead">
+        Filmed on a scenic hill above Berkeley with a friend as the subject. We dolly forward while zooming out
+        (and vice versa) so the subject stays the same size, while the background stretches and compresses.
+      </p>
+    </header>
+
+    <!-- Video block -->
+    <figure class="p3-video">
+      <video
+        id="p3-video"
+        src="images/1.mp4"
+        poster="images/2.jpg"
+        playsinline
+        muted
+        loop
+        controls
+        preload="metadata"
+      ></video>
+      <figcaption class="p3-caption">
+        Hitchcock (dolly) zoom — subject locked, background warps. Shot handheld on the Berkeley hills.
+      </figcaption>
+    </figure>
+
+
+    
+  </div>
+
+  <button class="scroll-down-arrow" aria-label="Scroll to next section"></button>
+</section>
+
+
+  </main>
+
+  <footer>
+    <p>Built by Angxi Liu for CS180</p>
+  </footer>
+
+</body>
+</html>
