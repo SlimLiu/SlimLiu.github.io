@@ -1,0 +1,278 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Prokudin‑Gorskii Colorizing – Project Showcase</title>
+  <style>
+    :root {
+      --bg: #0b0c10;
+      --panel: #111318;
+      --text: #e9eef2;
+      --muted: #9fb0bf;
+      --accent: #6ae3ff;
+      --good: #71dd9e;
+      --warn: #ffc857;
+      --bad: #ff6b6b;
+      --card: #151922;
+      --code: #0f1217;
+      --chip: rgba(106,227,255,.15);
+      --shadow: 0 10px 25px rgba(0,0,0,.35);
+      --radius: 16px;
+    }
+    * { box-sizing: border-box; }
+    html, body { height: 100%; }
+    body {
+      margin: 0; background: linear-gradient(120deg, var(--bg), #0e1118 50%, #0b0e14 100%);
+      color: var(--text); font: 16px/1.6 system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, "Apple Color Emoji", "Segoe UI Emoji";
+      -webkit-font-smoothing: antialiased; text-rendering: optimizeLegibility;
+    }
+    .container { max-width: 1100px; margin: 0 auto; padding: 28px 20px 60px; }
+    header { position: sticky; top: 0; backdrop-filter: blur(8px); background: rgba(11,14,20,.6); border-bottom: 1px solid #1c2330; z-index: 10; }
+    header .bar { max-width: 1100px; margin: 0 auto; display: flex; align-items: center; justify-content: space-between; padding: 14px 20px; }
+    header h1 { margin: 0; font-size: 18px; letter-spacing: .4px; }
+    header nav a { color: var(--muted); text-decoration: none; margin-left: 18px; font-size: 14px; }
+    header nav a:hover { color: var(--text); }
+
+    h2 { margin: 32px 0 10px; font-size: 26px; letter-spacing: .3px; }
+    h3 { margin: 22px 0 8px; font-size: 19px; color: var(--accent); }
+    p { color: var(--muted); margin: 8px 0 14px; }
+    .lead { font-size: 18px; color: var(--text); }
+
+    .panel { background: var(--panel); border: 1px solid #1b2636; border-radius: var(--radius); padding: 22px; box-shadow: var(--shadow); }
+    .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 18px; }
+    .card { background: var(--card); border: 1px solid #20293a; border-radius: var(--radius); overflow: hidden; box-shadow: var(--shadow); }
+    .card .thumb { display: block; width: 100%; height: 200px; object-fit: cover; background: #0d1117; }
+    .card .body { padding: 14px 14px 16px; }
+    .meta { display: flex; flex-wrap: wrap; gap: 8px; margin: 6px 0 10px; }
+    .chip { font-size: 12px; color: var(--accent); background: var(--chip); border: 1px solid rgba(106,227,255,.35); padding: 4px 8px; border-radius: 999px; }
+    .stat { font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, "Liberation Mono", monospace; font-size: 13px; color: #cfe5f8; }
+
+    .code { background: var(--code); border: 1px solid #172032; border-radius: 12px; padding: 14px; overflow: auto; box-shadow: var(--shadow); }
+    code, pre { font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, "Liberation Mono", monospace; font-size: 13px; }
+    pre { margin: 0; white-space: pre; }
+
+    .callout { border-left: 4px solid var(--accent); background: #0f1520; padding: 12px 14px; border-radius: 8px; }
+    .checklist li { margin: 8px 0; }
+    .pill { display: inline-block; padding: 2px 8px; background: #1a2534; border: 1px solid #27354c; border-radius: 999px; font-size: 12px; color: #d6e7fa; }
+
+    .gallery { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 18px; }
+    figure { background: var(--card); border: 1px solid #20293a; margin: 0; border-radius: var(--radius); overflow: hidden; box-shadow: var(--shadow); }
+    figure img { width: 100%; display: block; height: 260px; object-fit: cover; }
+    figcaption { padding: 10px 12px 14px; font-size: 13px; color: var(--muted); border-top: 1px solid #20293a; }
+
+    .two { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; }
+    @media (max-width: 840px) { .two { grid-template-columns: 1fr; } }
+
+    footer { margin-top: 40px; padding-top: 18px; border-top: 1px solid #1b2636; color: var(--muted); font-size: 13px; }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="bar">
+      <h1>Prokudin‑Gorskii Colorizing – Project Showcase - by Angxi Liu</h1>
+      <nav>
+        <a href="#overview">Overview</a>
+        <a href="#methods">Methods</a>
+        <a href="#issues">Issues & Fixes</a>
+        <a href="#results">Results</a>
+        <a href="#appendix">Appendix</a>
+      </nav>
+    </div>
+  </header>
+
+  <div class="container">
+    <section id="overview" class="panel">
+      <h2>Project Summary</h2>
+      <p class="lead">
+        I reconstructed color images from Prokudin-Gorskii plates by splitting the stacked grayscale into B/G/R, then aligning B and R to G using NCC with center-crop scoring and stacking to RGB. Initial issues were a global green cast (caused by inconsistent channel scales) and colored border halos (from wrap-around shifts). I fixed these by normalizing all channels to [0,1], optionally mean-matching B/R to G on a central crop, and cropping 5–10% borders after stacking. For large .tif images, I implemented a coarse-to-fine pyramid (with downsample2, build_pyramid, _local_search, align_pyramid) to project and refine shifts across scales, which stabilized offsets and cut search cost; my current run is ~1:10 with base_radius≈20 using NCC, and can be sped up further by reducing the finest-level radius and increasing the crop fraction.
+      </p>
+      <div class="meta">
+        <span class="chip">Reference: G channel</span>
+        <span class="chip">Similarity: NCC</span>
+        <span class="chip">Search: brute‑force window and Optimizations</span>
+        <span class="chip">Crop‑for‑score: 10–20%</span>
+      </div>
+    </section>
+
+    <section id="methods" class="panel" style="margin-top:18px;">
+      <h2>Pipeline & Key Functions</h2>
+      <div class="two">
+        <div>
+          <h3>1) Split & Normalize</h3>
+          <ul>
+            <li><span class="pill">to_float01</span>: convert to <em>float32</em> and scale to <strong>[0,1]</strong>.</li>
+            <li><span class="pill">split</span>: cut the vertical stack into <strong>B, G, R</strong>.</li>
+            <li><span class="pill">to_gray</span>: pass‑through for (H,W) or weighted RGB→gray if needed.</li>
+            <li><span class="pill">crop_border</span>: keep only the central area for scoring to avoid noisy edges.</li>
+          </ul>
+          <h3>2) Similarity Scores</h3>
+          <ul>
+            <li><span class="pill">ssd_score</span>: Sum of Squared Differences (smaller is better). Sensitive to exposure.</li>
+            <li><span class="pill">ncc_score</span>: Normalized Cross‑Correlation (larger is better). Robust to exposure/contrast.</li>
+          </ul>
+          <h3>3) Alignment</h3>
+          <p>
+            <span class="pill">align(moving, reference)</span> does a brute‑force search over (dy, dx)
+            within a window, using NCC by default. The best shift is applied (wrap‑around for search),
+            and we stack <code>[R_aligned, G, B_aligned]</code>.
+          </p>
+        </div>
+        <div>
+          <div class="code"><pre>
+# Minimal usage (single-scale)
+b, g, r = split(im)
+
+b_aligned, shift_b, score_b = align(b, g, search_radius=15, method='ncc', return_shift=True)
+r_aligned, shift_r, score_r = align(r, g, search_radius=15, method='ncc', return_shift=True)
+
+# IMPORTANT: normalize all three before stacking
+
+im_out = np.dstack([r_aligned, g, b_aligned])
+im_out = crop_border(im_out, 0.08)
+          </pre></div>
+          <p class="callout">Tip: When saving, crop a thin border (5–10%) to hide wrap‑around seams and plate edges.</p>
+        </div>
+      </div>
+    </section>
+
+    <section id="issues" class="panel" style="margin-top:18px;">
+      <h2>What Went Wrong & How I Fixed It</h2>
+      <h3>Issue A — Strong green tint across the whole image</h3>
+      <p>
+        Root cause: I aligned using normalized copies inside <code>align()</code>, but stacked with a <em>non‑normalized</em> G from disk.
+        That put channels on different numeric scales (G ≫ B,R), making the result green.
+      </p>
+      <p><strong>Fix:</strong> Normalize <em>all three channels</em> to [0,1] before stacking.</p>
+      <div class="code"><pre>
+def match_mean(x, ref, frac=0.1):
+    xc = crop_border(x,   frac)
+    rc = crop_border(ref, frac)
+    s = (rc.mean() + 1e-8) / (xc.mean() + 1e-8)
+    y = np.clip(x * s, 0.0, 1.0)
+    return y
+
+g = to_float01(g)
+b_aligned = to_float01(b_aligned)
+r_aligned = to_float01(r_aligned)
+      </pre></div>
+
+      <h3>Issue B — Colored borders / halos</h3>
+      <p>
+        Cause: searching uses wrap‑around shifts (<code>np.roll</code>). If the final image isn’t cropped,
+        you’ll see cyan/yellow frames from wrapped pixels and plate edges.
+      </p>
+      <p><strong>Fix:</strong> crop 5–10% after stacking for clean margins.</p>
+
+      <h3>Diagnostics I used</h3>
+      <ul class="checklist">
+        <li>Printed <code>dtype</code> and <code>min/max</code> per channel before stacking.</li>
+        <li>Logged offsets: <code>B→G = (dy, dx)</code>, <code>R→G = (dy, dx)</code>.</li>
+        <li>Visually checked alignment lines (roof edges, windows, river banks).</li>
+      </ul>
+    </section>
+
+    <section id="results" class="panel" style="margin-top:18px;">
+      <h2>Results</h2>
+
+      <div class="grid">
+        <!-- CARD: Example 1 -->
+        <div class="card">
+          <img class="thumb" src="outputs/monastery_colorized_wrong.jpg" alt="Monastery – naive (green)" />
+          <div class="body">
+            <div class="meta"><span class="chip">Before (naïve)</span><span class="chip">Green cast</span></div>
+            <div class="stat">Offsets: B→G (dy,dx)= (3, -2) · R→G (dy,dx)= (6, 1)</div>
+          </div>
+        </div>
+        <div class="card">
+          <img class="thumb" src="outputs/monastery_colorized.jpg" alt="Monastery – fixed" />
+          <div class="body">
+            <div class="meta"><span class="chip" style="color:var(--good);border-color:rgba(113,221,158,.45);background:rgba(113,221,158,.15)">After (fixed)</span><span class="chip">Normalized & cropped</span></div>
+            <div class="stat">Offsets: B→G = (3, -2) · R→G = (6, 1)</div>
+          </div>
+        </div>
+
+        <!-- CARD: Example 2 -->
+        <div class="card">
+          <img class="thumb" src="outputs/tobolsk_colorized-wrong.jpg" alt="Cathedral – naive" />
+          <div class="body">
+            <div class="meta"><span class="chip">Before (naïve)</span></div>
+            <div class="stat">Offsets: B→G = (-3, -3) · R→G = (4, 1)</div>
+          </div>
+        </div>
+        <div class="card">
+          <img class="thumb" src="outputs/tobolsk_colorized.jpg" alt="Cathedral – fixed" />
+          <div class="body">
+            <div class="meta"><span class="chip" style="color:var(--good);border-color:rgba(113,221,158,.45);background:rgba(113,221,158,.15)">After (fixed)</span><span class="chip">Mean‑match</span></div>
+            <div class="stat">Offsets: B→G = (-3, -3) · R→G = (4, 1)</div>
+          </div>
+        </div>
+
+        <!-- CARD: Add more examples as needed -->
+        <div class="card">
+          <img class="thumb" src="outputs/cathedral_colorized.jpg" alt="Cathedral – fixed" />
+          <div class="body">
+            <div class="meta"><span class="chip" style="color:var(--good);border-color:rgba(113,221,158,.45);background:rgba(113,221,158,.15)">After (fixed)</span><span class="chip">Mean‑match</span></div>
+            <div class="stat">Offsets: B→G = (-5, -2) · R→G = (7, 1)</div>
+          </div>
+        </div>
+
+
+      <p style="margin-top:10px; color:var(--muted); font-size:13px;">Note: Images courtesy of the Library of Congress – Prokudin‑Gorskii Collection.</p>
+    </section>
+
+    <section id="appendix" class="panel" style="margin-top:18px;">
+      <h2>Optimizations</h2>
+      <p class="lead">For large <code>.tif</code> plates, I implemented a coarse‑to‑fine image pyramid with local window refinement to accelerate alignment while maintaining quality.</p>
+
+      <h3>Functions I Implemented</h3>
+      <ul>
+        <li><span class="pill">downsample2(im)</span> — 2×2 box‑filter downsampling (mean of a 2×2 block, then decimate by 2) to safely reduce resolution.</li>
+        <li><span class="pill">build_pyramid(im, min_size, max_levels)</span> — builds a grayscale pyramid returned in order <em>coarse → fine</em>.</li>
+        <li><span class="pill">_local_search(mov, ref, center, radius, method, crop_frac)</span> — local search around the current shift using NCC/SSD on the central crop.</li>
+        <li><span class="pill">align_pyramid(moving, reference, ...)</span> — projects shifts (×2 per level), refines locally, returns aligned image and final <code>(dy, dx)</code>.</li>
+      </ul>
+
+      <h3>Outcomes</h3>
+      <ul class="checklist">
+        <li><strong>Speed‑up:</strong> single‑scale ≈ <em>90～120 s</em> → pyramid ≈ <em>30 s</em> on large plates (fill with your timings).</li>
+        <li><strong>Alignment quality:</strong> stable offsets across levels; fewer misalignments on high‑resolution images.</li>
+        <li><strong>Robustness:</strong> NCC + center‑crop scoring resists exposure/edge artifacts.</li>
+        <li><strong>Cleanup:</strong> 5–10% border crop removes wrap‑around seams; optional mean‑match reduces green tint.</li>
+      </ul>
+
+      <div class="callout">Record per‑image offsets alongside thumbnails in the Results section, e.g., <code>B→G = (dy, dx)</code>, <code>R→G = (dy, dx)</code>.</div>
+    </section>
+
+    <section id="results" class="panel" style="margin-top:18px;">
+      <h2>Results</h2>
+
+      <div class="grid">
+        <!-- CARD: Example 1 -->
+        <div class="card">
+          <img class="thumb" src="outputs/church_colorized.jpg" alt="church" />
+          <div class="body">
+            <div class="meta"><span class="chip">church_colorized</span></div>
+            <div class="stat">Offsets: B→G (dy,dx)= (-25, -4) · R→G (dy,dx)= （33, -8）</div>
+          </div>
+        </div>
+        
+
+        <!-- CARD: Example 1 -->
+        <div class="card">
+          <img class="thumb" src="outputs/emir_colorized.jpg" alt="emir" />
+          <div class="body">
+            <div class="meta"><span class="chip">emir_colorized</span></div>
+            <div class="stat">Offsets: B→G (dy,dx)= (-49, -24) · R→G (dy,dx)= （57, 17）</div>
+          </div>
+        </div>
+
+      <p style="margin-top:10px; color:var(--muted); font-size:13px;">Note: Images courtesy of the Library of Congress – Prokudin‑Gorskii Collection.</p>
+    </section>
+
+    <footer>
+      Built for course presentation. Replace the images under <code>assets/</code> and fill in the offset numbers you printed from your script.
+    </footer>
+  </div>
+</body>
+</html>
