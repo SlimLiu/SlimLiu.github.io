@@ -1,0 +1,214 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Project 3A — Image Warping & Mosaics | CS180</title>
+  <style>
+    :root{
+      --bg:#0b0c0f; --card:#111318; --muted:#9aa0a6; --text:#e6eaf0; --accent:#7dd3fc; --line:#1f232b;
+    }
+    html,body{height:100%;margin:0;font-family:Inter, ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, Helvetica, Arial; background:var(--bg); color:var(--text)}
+    .wrap{max-width:1100px;margin:40px auto;padding:0 20px}
+    header{display:flex;align-items:flex-start;justify-content:space-between;gap:16px;margin-bottom:18px}
+    h1{font-size:28px;line-height:1.1;margin:0 0 6px 0;font-weight:700}
+    .sub{color:var(--muted);font-size:14px;margin:0}
+    .hero{border:1px solid var(--line);border-radius:16px;padding:18px 18px 8px;background:linear-gradient(180deg, #12151c 0%, #0e1016 100%)}
+    .hero p{color:var(--muted);margin:6px 0 12px 0}
+    a{color:var(--accent);text-decoration:none}
+    a:hover{text-decoration:underline}
+
+    /* Section titles */
+    section{margin:26px 0}
+    section h2{font-size:18px;margin:0 0 10px 0;font-weight:650}
+    .note{color:var(--muted);font-size:13px}
+
+    /* Grid of cards */
+    .grid{display:grid;gap:18px;grid-template-columns: repeat(auto-fit,minmax(300px,1fr))}
+    .card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:14px;overflow:hidden}
+    .card h3{margin:0 0 6px 0;font-size:16px}
+    .thumbs{display:flex;gap:10px;align-items:center;justify-content:center}
+    .thumbs img{width:100%;height:190px;object-fit:cover;border-radius:10px;cursor:pointer;transition:transform .18s ease, box-shadow .18s}
+    .thumbs img:hover{transform:translateY(-3px)}
+    .mosaic img{width:100%;height:230px;object-fit:cover;border-radius:10px;margin-top:10px}
+    .meta{display:flex;justify-content:space-between;align-items:center;gap:8px;margin-top:10px}
+    .caption{color:var(--muted);font-size:12px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+    .btn{background:#0f141b;border:1px solid var(--line);color:var(--text);padding:6px 10px;border-radius:8px;font-size:12px;cursor:pointer}
+
+    /* Lightbox */
+    .lightbox{position:fixed;inset:0;display:none;align-items:center;justify-content:center;background:rgba(0,0,0,.72);z-index:40}
+    .lightbox.show{display:flex}
+    .lightbox img{max-width:92vw;max-height:92vh;border-radius:10px}
+
+    /* Details */
+    details{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:12px}
+    details summary{cursor:pointer;font-weight:600}
+
+    footer{margin:28px 0 16px;text-align:center;color:var(--muted);font-size:12px}
+    hr{border:none;border-top:1px solid var(--line);margin:22px 0}
+    code.k{padding:2px 6px;border-radius:6px;background:#0f141b;border:1px solid var(--line)}
+
+    @media (max-width:720px){.thumbs img{height:130px}.mosaic img{height:180px}}
+  </style>
+  <!-- MathJax for a couple tiny formulas -->
+  <script>
+    window.MathJax = { tex: { inlineMath: [['$','$'], ['\\(','\\)']] } };
+  </script>
+  <script defer src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+</head>
+<body>
+  <div class="wrap">
+    <header>
+      <div>
+        <h1>Project 3A — Image Warping & Photo Mosaics</h1>
+        <p class="sub">CS180 · Fall 2025 · UC Berkeley</p>
+      </div>
+    </header>
+
+    <div class="hero">
+      <p><strong>Goal.</strong> Build panoramas by hand: collect overlapping photos, estimate a projective homography $H$ from clicked correspondences, inverse-warp images with both nearest-neighbor and bilinear interpolation, then feather-blend them into mosaics.</p>
+    </div>
+
+    <section id="overview">
+      <h2>Overview of My Pipeline</h2>
+      <ol>
+        <li><strong>Capture.</strong> I shot 2–3 views per scene with ~50–70% overlap and a fixed center of projection.</li>
+        <li><strong>Correspondences.</strong> I clicked $n\ge4$ pairs per image pair (usually 5-8) using a small UI, then normalized points.</li>
+        <li><strong>Homography (DLT).</strong> Solve $Ah=0$ (least squares) for $h$ (the 8 DoF of $H$, with $H_{33}=1$), then denormalize.</li>
+        <li><strong>Canvas.</strong> Project each image’s four corners through $H$ to predict the mosaic bounding box.</li>
+        <li><strong>Inverse warping.</strong> For each output pixel $x'$, compute $x = H^{-1}x'$, then sample with <em>both</em> methods:
+          <ul>
+            <li><em>Nearest neighbor</em>: fast, but blocky edges/aliasing.</li>
+            <li><em>Bilinear</em>: smoother edges; a little slower.</li>
+          </ul>
+        </li>
+        <li><strong>Feather blending.</strong> Alpha masks taper to zero near image borders; overlapping regions are weighted averages.</li>
+      </ol>
+    </section>
+
+    <section id="code-notes">
+      <h2>Core Functions (explained)</h2>
+      <details open>
+        <summary><code class="k">computeH(im1_pts, im2_pts)</code> — Direct Linear Transform (DLT)</summary>
+        <p>Given $n$ correspondences $(x_i, y_i) \leftrightarrow (x'_i, y'_i)$ on two views of a <em>planar</em> scene (or a pure rotation), we stack two equations per point to form $A h = 0$, solve for $h$ in the least-squares sense (SVD on $A$), reshape into $H$ and scale so $H_{33}=1$. I use point normalization (Hartley) for numerical stability, then undo the normalization.</p>
+      </details>
+      <details>
+        <summary><code class="k">apply_H(H, pts)</code> — project points through $H$</summary>
+        <p>Converts $N\times2$ points to homogeneous coordinates, applies $H$, then divides by the third coordinate to return $(x',y')$.</p>
+      </details>
+      <details>
+        <summary><code class="k">warp_image_inverse(src, H)</code> — inverse mapping + interpolation</summary>
+        <p>Computes the output mosaic canvas by projecting source-image corners; for each output pixel $p'$, maps $p = H^{-1}p'$ back to the source and samples either by nearest-neighbor or bilinear interpolation. Returns both versions and their alpha mask for blending.</p>
+      </details>
+    </section>
+
+    <section id="results">
+      <h2>Mosaic Results (six scenes)</h2>
+      <div class="grid" id="gallery"></div>
+      <p class="note">Click any image to view at full resolution.</p>
+    </section>
+
+    <section id="spotlight">
+      <h2>Spotlight — “The crack is where the light seeps in”</h2>
+      <p>I intentionally built a mosaic from <em>the same</em> desk-lamp photo but clicked two <em>incompatible</em> correspondence sets: one along a vertical line on the light source, the other along a curved rim of the lampshade. A single homography maps lines to lines and cannot exactly map a circular arc to a straight line. When least‑squares fits $H$ to these mutually inconsistent constraints, the solution overfits near the clicked points and induces a strong projective shear elsewhere. After inverse warping, regions near the constrained features align, while unconstrained areas stretch/collapse. During feather blending, the high‑contrast lamp region from one warp meets the other along the locus where the two warps disagree most, producing a thin seam that visually reads as a <em>crack of light</em>. In short: violating planar/rigid assumptions + over‑constrained <em>but incompatible</em> correspondences ⇒ severe local distortion + seam exposure.</p>
+      <ul>
+        <li><strong>Why a seam (crack)?</strong> Where the Jacobian of $H^{-1}$ changes rapidly, bilinear sampling pulls in inconsistent brightness from opposite sides; weighted averaging cannot cancel it because both warps disagree in phase and intensity.</li>
+        <li><strong>Why near the lamp?</strong> The lamp’s bright highlight amplifies even tiny misalignments; any blending mask exposes the difference as a bright fissure.</li>
+      </ul>
+    </section>
+
+    <section id="discussion">
+      <h2>Interpolation & Blending — brief discussion</h2>
+      <p><strong>Nearest-neighbor</strong> is crisp but aliased; it exaggerates pixel stairs on diagonal edges and grid patterns (e.g., blinds). <strong>Bilinear</strong> smooths edges and reduces moiré at a small computational cost. Feather blending works well for exposure‑consistent inputs; for strong exposure or parallax differences, multi‑band (Laplacian pyramid) blending would be more robust.</p>
+    </section>
+
+    <section id="deliverables">
+      <h2>What’s Included (per Part A)</h2>
+      <ul>
+        <li><strong>Shooting:</strong> Six scenes with overlapping views.</li>
+        <li><strong>Homography:</strong> DLT implementation with point normalization; sample $H$ matrices shown in the notebook.</li>
+        <li><strong>Warping:</strong> Both nearest-neighbor and bilinear interpolation implemented; used inverse mapping and custom canvas sizing.</li>
+        <li><strong>Mosaics:</strong> Three+ stitched results are displayed below (I show six).</li>
+      </ul>
+      <p class="note">Rectification examples and correspondence visualizations can be added below as I finalize the write‑up. (The code already supports them.)</p>
+    </section>
+
+    <hr/>
+    <section id="appendix">
+      <h2>Appendix — Implementation Notes</h2>
+      <ul>
+        <li><strong>Clicking points.</strong> I used a simple matplotlib UI to record correspondences in pixel coordinates.</li>
+        <li><strong>Alpha masks.</strong> Each warped image has a distance‑to‑edge falloff; overlapping pixels are weighted averages.</li>
+        <li><strong>Edge cases.</strong> Large viewpoint change and non‑planar scenes cause ghosting; better handled by Part B (auto‑stitching with RANSAC) or multi‑band blending.</li>
+      </ul>
+    </section>
+
+    <footer>
+      Last updated: Oct 9, 2025 · Author: Slim Liu
+    </footer>
+  </div>
+
+  <!-- Lightbox -->
+  <div class="lightbox" id="lightbox" onclick="hideLightbox()">
+    <img id="lightboxImg" src="" alt="preview" />
+  </div>
+
+  <script>
+    // Define six groups with human-friendly titles & captions
+    const groups = [
+      { left:"11.png", right:"12.png", mosaic:"mosaic_11_12.png", title:"Bedroom Curtain", caption:"Two overlapping views of my bedroom blackout curtain." },
+      { left:"21.png", right:"22.png", mosaic:"mosaic_21_22.png", title:"Living Room Blinds", caption:"Horizontal blinds — good for testing line preservation." },
+      { left:"31.png", right:"32.png", mosaic:"mosaic_31_32.png", title:"My Bed", caption:"Bed frame & linens with moderate parallax." },
+      { left:"41.png", right:"42.png", mosaic:"mosaic_41_42.png", title:"Street Outside the Door", caption:"Outdoor scene with signage and long edges." },
+      { left:"51.png", right:"52.png", mosaic:"mosaic_51_52.png", title:"UCB Library — Large Oil Painting", caption:"Interior with strong perspective lines." },
+      { left:"61.png", right:"62.png", mosaic:"mosaic_61_62.png", title:"Desk Lamp — Same Photo, Different Clicks", caption:"Vertical line vs. semicircular rim → artistic \"crack of light\"." }
+    ];
+
+    const gallery = document.getElementById('gallery');
+
+    function cardHtml(g){
+      return `
+        <article class="card">
+          <h3>${g.title}</h3>
+          <div class="thumbs">
+            <img loading="lazy" src="${g.left}" alt="source left: ${g.title}" data-full="${g.left}" onerror="imgError(event)">
+            <img loading="lazy" src="${g.right}" alt="source right: ${g.title}" data-full="${g.right}" onerror="imgError(event)">
+          </div>
+          <div class="mosaic">
+            <img loading="lazy" src="${g.mosaic}" alt="mosaic result: ${g.title}" data-full="${g.mosaic}" onerror="imgError(event)">
+          </div>
+          <div class="meta">
+            <div class="caption">${g.caption}</div>
+            <div>
+              <button class="btn" onclick="openInNew(event, '${g.left}')">Open Source</button>
+              <button class="btn" onclick="openInNew(event, '${g.mosaic}')">Open Mosaic</button>
+            </div>
+          </div>
+        </article>
+      `;
+    }
+
+    gallery.innerHTML = groups.map(cardHtml).join('\n');
+
+    // Lightbox handlers
+    document.querySelectorAll('.thumbs img, .mosaic img').forEach(img => {
+      img.addEventListener('click', (e)=>{
+        e.stopPropagation();
+        showLightbox(e.currentTarget.dataset.full || e.currentTarget.src);
+      });
+    });
+    function showLightbox(src){
+      const lb = document.getElementById('lightbox');
+      const lbImg = document.getElementById('lightboxImg');
+      lbImg.src = src; lb.classList.add('show');
+    }
+    function hideLightbox(){
+      const lb = document.getElementById('lightbox');
+      lb.classList.remove('show');
+      document.getElementById('lightboxImg').src = '';
+    }
+    function openInNew(ev, src){ ev.stopPropagation(); window.open(src, '_blank'); }
+    function imgError(e){ const el = e.currentTarget; el.style.opacity = 0.12; el.alt = 'Not found: '+(el.getAttribute('src')||''); }
+  </script>
+</body>
+</html>
