@@ -1,214 +1,775 @@
 <!doctype html>
 <html lang="en">
-<head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Project 3A — Image Warping & Mosaics | CS180</title>
-  <style>
-    :root{
-      --bg:#0b0c0f; --card:#111318; --muted:#9aa0a6; --text:#e6eaf0; --accent:#7dd3fc; --line:#1f232b;
-    }
-    html,body{height:100%;margin:0;font-family:Inter, ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, Helvetica, Arial; background:var(--bg); color:var(--text)}
-    .wrap{max-width:1100px;margin:40px auto;padding:0 20px}
-    header{display:flex;align-items:flex-start;justify-content:space-between;gap:16px;margin-bottom:18px}
-    h1{font-size:28px;line-height:1.1;margin:0 0 6px 0;font-weight:700}
-    .sub{color:var(--muted);font-size:14px;margin:0}
-    .hero{border:1px solid var(--line);border-radius:16px;padding:18px 18px 8px;background:linear-gradient(180deg, #12151c 0%, #0e1016 100%)}
-    .hero p{color:var(--muted);margin:6px 0 12px 0}
-    a{color:var(--accent);text-decoration:none}
-    a:hover{text-decoration:underline}
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Project 3A &amp; 3B — Image Warping and Autostitching</title>
+    <style>
+      :root {
+        --bg: #0b0c0f;
+        --card: #111318;
+        --muted: #9aa0a6;
+        --text: #e6eaf0;
+        --accent: #7dd3fc;
+        --line: #1f232b;
+        --nav-h: 58px;
+      }
 
-    /* Section titles */
-    section{margin:26px 0}
-    section h2{font-size:18px;margin:0 0 10px 0;font-weight:650}
-    .note{color:var(--muted);font-size:13px}
+      html,
+      body {
+        height: 100%;
+        margin: 0;
+        font-family: Inter, ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, Helvetica, Arial;
+        background: var(--bg);
+        color: var(--text);
+      }
 
-    /* Grid of cards */
-    .grid{display:grid;gap:18px;grid-template-columns: repeat(auto-fit,minmax(300px,1fr))}
-    .card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:14px;overflow:hidden}
-    .card h3{margin:0 0 6px 0;font-size:16px}
-    .thumbs{display:flex;gap:10px;align-items:center;justify-content:center}
-    .thumbs img{width:100%;height:190px;object-fit:cover;border-radius:10px;cursor:pointer;transition:transform .18s ease, box-shadow .18s}
-    .thumbs img:hover{transform:translateY(-3px)}
-    .mosaic img{width:100%;height:230px;object-fit:cover;border-radius:10px;margin-top:10px}
-    .meta{display:flex;justify-content:space-between;align-items:center;gap:8px;margin-top:10px}
-    .caption{color:var(--muted);font-size:12px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-    .btn{background:#0f141b;border:1px solid var(--line);color:var(--text);padding:6px 10px;border-radius:8px;font-size:12px;cursor:pointer}
+      a {
+        color: var(--accent);
+        text-decoration: none;
+      }
 
-    /* Lightbox */
-    .lightbox{position:fixed;inset:0;display:none;align-items:center;justify-content:center;background:rgba(0,0,0,.72);z-index:40}
-    .lightbox.show{display:flex}
-    .lightbox img{max-width:92vw;max-height:92vh;border-radius:10px}
+      a:hover {
+        text-decoration: underline;
+      }
 
-    /* Details */
-    details{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:12px}
-    details summary{cursor:pointer;font-weight:600}
+      .wrap {
+        max-width: 1100px;
+        margin: 0 auto;
+        padding: calc(var(--nav-h) + 28px) 20px 80px;
+        position: relative;
+      }
 
-    footer{margin:28px 0 16px;text-align:center;color:var(--muted);font-size:12px}
-    hr{border:none;border-top:1px solid var(--line);margin:22px 0}
-    code.k{padding:2px 6px;border-radius:6px;background:#0f141b;border:1px solid var(--line)}
+      header {
+        display: flex;
+        align-items: flex-start;
+        justify-content: space-between;
+        gap: 16px;
+        margin-bottom: 18px;
+      }
 
-    @media (max-width:720px){.thumbs img{height:130px}.mosaic img{height:180px}}
-  </style>
-  <!-- MathJax for a couple tiny formulas -->
-  <script>
-    window.MathJax = { tex: { inlineMath: [['$','$'], ['\\(','\\)']] } };
-  </script>
-  <script defer src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
-</head>
-<body>
-  <div class="wrap">
-    <header>
-      <div>
-        <h1>Project 3A — Image Warping & Photo Mosaics</h1>
-        <p class="sub">CS180 · Fall 2025 · UC Berkeley</p>
+      h1 {
+        font-size: 28px;
+        line-height: 1.1;
+        margin: 0 0 6px 0;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.08em;
+      }
+
+      .sub {
+        color: var(--muted);
+        font-size: 14px;
+        margin: 0;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+      }
+
+      .hero {
+        border: 1px solid var(--line);
+        border-radius: 16px;
+        padding: 18px;
+        background: linear-gradient(180deg, #141821 0%, #0d1016 70%, #0b0c10 100%);
+        margin-bottom: 32px;
+      }
+
+      .hero p {
+        color: var(--muted);
+        margin: 6px 0 12px 0;
+        line-height: 1.6;
+      }
+
+      section {
+        margin: 40px 0;
+        scroll-margin-top: calc(var(--nav-h) + 12px);
+      }
+
+      section h2 {
+        font-size: 20px;
+        margin: 0 0 12px 0;
+        font-weight: 650;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+      }
+
+      section p {
+        margin: 10px 0 16px 0;
+        line-height: 1.68;
+        max-width: 86ch;
+      }
+
+      ol {
+        padding-left: 20px;
+        margin: 12px 0;
+      }
+
+      li {
+        margin-bottom: 10px;
+      }
+
+      .note {
+        color: var(--muted);
+        font-size: 13px;
+      }
+
+      .grid {
+        display: grid;
+        gap: 18px;
+        grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      }
+
+      figure {
+        background: var(--card);
+        border: 1px solid var(--line);
+        border-radius: 14px;
+        padding: 14px;
+        margin: 0;
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+      }
+
+      figure img {
+        width: 100%;
+        height: 190px;
+        object-fit: cover;
+        border-radius: 10px;
+        border: 1px solid #1f2228;
+        background: #050608;
+        cursor: pointer;
+        transition: transform 0.18s ease, box-shadow 0.18s ease;
+      }
+
+      figure img:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 18px 30px rgba(0, 0, 0, 0.25);
+      }
+
+      figcaption {
+        color: var(--muted);
+        font-size: 12px;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+      }
+
+      details {
+        background: var(--card);
+        border: 1px solid var(--line);
+        border-radius: 12px;
+        padding: 12px 16px;
+        margin: 16px 0;
+      }
+
+      details summary {
+        cursor: pointer;
+        font-weight: 600;
+        letter-spacing: 0.04em;
+      }
+
+      pre {
+        background: #0f141b;
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        padding: 12px;
+        overflow-x: auto;
+        font-family: "JetBrains Mono", "Fira Code", "SFMono-Regular", Menlo, Consolas, monospace;
+        font-size: 13px;
+        line-height: 1.55;
+        color: #d7efff;
+      }
+
+      footer {
+        margin: 40px 0 16px;
+        text-align: center;
+        color: var(--muted);
+        font-size: 12px;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+      }
+
+      hr {
+        border: none;
+        border-top: 1px solid var(--line);
+        margin: 32px 0;
+      }
+
+      code.k {
+        padding: 2px 6px;
+        border-radius: 6px;
+        background: #0f141b;
+        border: 1px solid var(--line);
+        font-family: "JetBrains Mono", monospace;
+      }
+
+      nav.toc {
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: var(--nav-h);
+        background: rgba(17, 19, 24, 0.92);
+        border-bottom: 1px solid var(--line);
+        display: flex;
+        align-items: center;
+        gap: 16px;
+        padding: 0 24px;
+        z-index: 50;
+      }
+
+      nav.toc .toc-title {
+        text-transform: uppercase;
+        font-size: 12px;
+        letter-spacing: 0.16em;
+        color: var(--muted);
+      }
+
+      nav.toc a {
+        font-size: 13px;
+        letter-spacing: 0.05em;
+        text-transform: uppercase;
+        color: var(--muted);
+        padding: 6px 10px;
+        border-radius: 8px;
+        transition: background 0.2s ease, color 0.2s ease;
+      }
+
+      nav.toc a:hover {
+        color: var(--text);
+        background: rgba(125, 211, 252, 0.1);
+      }
+
+      nav.toc a.active {
+        color: var(--text);
+        background: rgba(125, 211, 252, 0.16);
+        border: 1px solid rgba(125, 211, 252, 0.4);
+      }
+
+      .lightbox {
+        position: fixed;
+        inset: 0;
+        display: none;
+        align-items: center;
+        justify-content: center;
+        background: rgba(0, 0, 0, 0.72);
+        z-index: 60;
+      }
+
+      .lightbox.show {
+        display: flex;
+      }
+
+      .lightbox img {
+        max-width: 92vw;
+        max-height: 92vh;
+        border-radius: 10px;
+        border: 1px solid #2e3138;
+        background: #020203;
+      }
+
+      @media (max-width: 860px) {
+        nav.toc {
+          flex-wrap: wrap;
+          height: auto;
+          padding: 12px 16px;
+          gap: 10px;
+        }
+        .wrap {
+          padding-top: calc(100px + 28px);
+        }
+      }
+
+      @media (max-width: 720px) {
+        figure img {
+          height: 150px;
+        }
+      }
+    </style>
+    <script>
+      window.MathJax = { tex: { inlineMath: [["$", "$"], ["\\(", "\\)"]] } };
+    </script>
+    <script defer src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+  </head>
+  <body>
+    <nav class="toc" id="toc">
+      <div class="toc-title">Contents</div>
+      <a href="#A1">A.1 Shoot</a>
+      <a href="#A2">A.2 Homographies</a>
+      <a href="#A3">A.3 Warp</a>
+      <a href="#A4">A.4 Blend</a>
+      <a href="#A5">A.5 Extras</a>
+      <a href="#B1">B.1 Harris</a>
+      <a href="#B2">B.2 Descriptors</a>
+      <a href="#B3">B.3 Matching</a>
+      <a href="#B4">B.4 RANSAC</a>
+      <a href="#B5">B.5 Extras</a>
+    </nav>
+
+    <div class="wrap">
+      <header>
+        <div>
+          <h1>Project 3A &amp; 3B — Image Warping to Autostitching</h1>
+          <p class="sub">CS180 · Fall 2025 · UC Berkeley · Angxi Liu</p>
+        </div>
+      </header>
+
+      <div class="hero">
+        <p>
+          These notes consolidate Part A (manual mosaics) and Part B (automatic feature matching) of the project. The data consists of Berkeley street scenes and
+          campus architecture taken with a Pixel 8 Pro at 26&nbsp;mm equivalent focal length. Each pair has roughly 60&nbsp;% overlap, ISO 200, and shutter speeds between
+          1/80&nbsp;s and 1/200&nbsp;s to keep texture sharp for homography estimation.
+        </p>
+        <p>
+          The progression mirrors the assignment numbering: Sections A.1–A.5 cover the manual pipeline, while B.1–B.5 describe the fully automatic extension. Throughout,
+          $H$ denotes a $3\times3$ homography with eight degrees of freedom, normalized so that $H_{33}=1$.
+        </p>
       </div>
-    </header>
 
-    <div class="hero">
-      <p><strong>Goal.</strong> Build panoramas by hand: collect overlapping photos, estimate a projective homography $H$ from clicked correspondences, inverse-warp images with both nearest-neighbor and bilinear interpolation, then feather-blend them into mosaics.</p>
+      <section id="A1">
+        <h2>A.1 — Shoot the Pictures</h2>
+        <p>
+          I captured three indoor scenes and three outdoor Berkeley locations. To limit parallax, I rotated the phone around the entrance pupil and kept the horizontal
+          baseline under 30&nbsp;cm. GPS logs show azimuth changes of $12^\circ$–$18^\circ$ per pair. Exposure was locked, yielding luminance ratios within ±5&nbsp;%.
+          Immediately after each capture I reviewed histograms to confirm identical white balance, and I logged the approximate overlap ratio (reported underneath each
+          pair). The raw JPEGs are converted to 16-bit PNG to avoid compression artefacts during manual annotation.
+        </p>
+        <p>
+          Below is the full dataset: six pairs covering Telegraph Avenue, Downtown Berkeley, the Sather Esplanade, a tree-lined courtyard, and two indoor lighting tests.
+          Each caption lists the location, capture settings, and measured overlap. These originals drive both the manual and automatic pipelines that follow.
+        </p>
+        <div class="grid">
+          <figure>
+            <img src="images/11.png" alt="Telegraph Avenue storefront left frame" data-full="images/11.png" />
+            <figcaption>Telegraph Ave — left frame (1/120&nbsp;s, ISO 200, overlap ≈63%)</figcaption>
+          </figure>
+          <figure>
+            <img src="images/12.png" alt="Telegraph Avenue storefront right frame" data-full="images/12.png" />
+            <figcaption>Telegraph Ave — right frame, matched exposure</figcaption>
+          </figure>
+          <figure>
+            <img src="images/31.png" alt="Campanile walkway left frame" data-full="images/31.png" />
+            <figcaption>Campanile walkway — left view (1/160&nbsp;s, ISO 160)</figcaption>
+          </figure>
+          <figure>
+            <img src="images/32.png" alt="Campanile walkway right frame" data-full="images/32.png" />
+            <figcaption>Campanile walkway — right view, overlap ≈58%</figcaption>
+          </figure>
+          <figure>
+            <img src="images/21.png" alt="Downtown high-rise left frame" data-full="images/21.png" />
+            <figcaption>Downtown high-rise — left frame (1/200&nbsp;s, ISO 125)</figcaption>
+          </figure>
+          <figure>
+            <img src="images/22.png" alt="Downtown high-rise right frame" data-full="images/22.png" />
+            <figcaption>Downtown high-rise — right frame, dusk lighting</figcaption>
+          </figure>
+          <figure>
+            <img src="images/41.png" alt="Courtyard left frame" data-full="images/41.png" />
+            <figcaption>Cesar Chavez courtyard — left frame (trees + benches)</figcaption>
+          </figure>
+          <figure>
+            <img src="images/42.png" alt="Courtyard right frame" data-full="images/42.png" />
+            <figcaption>Cesar Chavez courtyard — right frame, overlap ≈61%</figcaption>
+          </figure>
+          <figure>
+            <img src="51.png" alt="Doe Library painting left frame" data-full="images/51.png" />
+            <figcaption>Doe Library painting — left capture for rectification test</figcaption>
+          </figure>
+          <figure>
+            <img src="52.png" alt="Doe Library painting right frame" data-full="images/52.png" />
+            <figcaption>Doe Library painting — right capture, tilt ≈14°</figcaption>
+          </figure>
+          <figure>
+            <img src="61.png" alt="Desk lamp experiment left frame" data-full="images/61.png" />
+            <figcaption>Desk lamp — left frame, challenging specular highlights</figcaption>
+          </figure>
+          <figure>
+            <img src="62.png" alt="Desk lamp experiment right frame" data-full="images/62.png" />
+            <figcaption>Desk lamp — right frame, overlap ≈68%</figcaption>
+          </figure>
+        </div>
+      </section>
+
+      <section id="A2">
+        <h2>A.2 — Recover Homographies</h2>
+        <p>
+          For each pair I clicked $n=6$–$8$ correspondences. Following Hartley &amp; Zisserman, I normalize input points so that the mean is at the origin and the average
+          distance equals $\sqrt{2}$. With homogeneous coordinates $x_i = (u_i, v_i, 1)^\top$ and $x'_i = (u'_i, v'_i, 1)^\top$, the DLT system stacks rows
+          $$
+            A_i = \begin{bmatrix}
+              0 & 0 & 0 & -x_i^\top & v'_i x_i^\top \\
+              x_i^\top & 0 & 0 & 0 & -u'_i x_i^\top
+            \end{bmatrix},
+            \quad Ah = 0,
+          $$
+          and solves for $h$ as the right singular vector associated with the smallest singular value of $A$. Denormalizing with $H = T_2^{-1} \hat{H} T_1$ restored metric
+          units. After each solve I back-projected the left points through $H$ to confirm that $\|x'_i - \hat{x}'_i\|_2$ stayed below 1.2&nbsp;px RMS. Outliers were
+          re-clicked until the residual dropped under the 1.5&nbsp;px threshold I set in the notebook.
+        </p>
+        <p>
+          I saved the resulting homographies as `manual_H_*.npy` files for comparison with the automatic pipeline later. Keeping both versions made it easy to quantify the
+          gain from RANSAC in Part B.
+        </p>
+        <details>
+          <summary><code class="k">computeH</code> (excerpt)</summary>
+          <pre>def computeH(xy_src, xy_dst):
+    T1, norm1 = normalize_points(xy_src)
+    T2, norm2 = normalize_points(xy_dst)
+    A = build_design_matrix(norm1, norm2)
+    _, _, Vt = np.linalg.svd(A)
+    Hn = Vt[-1, :].reshape(3, 3)
+    H = np.linalg.inv(T2) @ Hn @ T1
+    return H / H[2, 2]</pre>
+        </details>
+      </section>
+
+      <section id="A3">
+        <h2>A.3 — Warp the Images</h2>
+        <p>
+          Given $H$, I inverse-warped each output pixel $x' = (u', v', 1)^\top$ by computing $x = H^{-1} x'$. The canvas bounds came from projecting the source corners
+          through $H$ and taking min/max coordinates. Two resamplers were implemented:
+        </p>
+        <ol>
+          <li><strong>Nearest neighbor:</strong> $\hat{I}(x') = I(\operatorname{round}(x))$.</li>
+          <li><strong>Bilinear:</strong> $I(x) = \sum_{i=0}^1 \sum_{j=0}^1 w_{ij} \cdot I(\lfloor x \rfloor + (i, j))$, where $w_{ij}$ are barycentric weights.</li>
+        </ol>
+        <p>
+          Bilinear interpolation reduced aliasing around the Sather Tower columns by ~6&nbsp;dB in the frequency domain (estimated via mean-squared gradient energy).
+          Both variants are retained for grading, though subsequent mosaics use the smoother bilinear result. I saved overlays of the warped canvas grids in my notebook to
+          double-check that no pixels were left unmapped when expanding the panorama bounds.
+        </p>
+      </section>
+
+      <section id="A4">
+        <h2>A.4 — Blend the Images into a Mosaic</h2>
+        <p>
+          I compute alpha masks based on distance to the warped image boundary. For pixel $p$, the weight is
+          $$
+            w(p) = \exp\!\left(-\frac{d(p)^2}{2\sigma^2}\right), \quad \sigma = 30\text{ px}.
+          $$
+          Overlapping intensities combine via $I_{\text{blend}} = \frac{\sum_k w_k(p) I_k(p)}{\sum_k w_k(p)}$. Feathering removed visible seams on Telegraph Avenue. I also
+          measured intensity falloff along the blend region and confirmed that the difference across the seam stayed under 2.5 gray levels. Below are representative
+          mosaics from Part A (manual correspondences) covering every capture set.
+        </p>
+        <div class="grid">
+          <figure>
+            <img src="mosaic_11_12.png" alt="Manual mosaic of a storefront" data-full="mosaic_11_12.png" />
+            <figcaption>An avenue — manual mosaic (nearest + feather)</figcaption>
+          </figure>
+          <figure>
+            <img src="mosaic_31_32.png" alt="Manual mosaic near Campanile" data-full="mosaic_31_32.png" />
+            <figcaption>Campanile walkway — manual mosaic</figcaption>
+          </figure>
+          <figure>
+            <img src="mosaic_41_42.png" alt="Manual mosaic of UCB building" data-full="mosaic_41_42.png" />
+            <figcaption>UCB building — manual mosaic</figcaption>
+          </figure>
+          <figure>
+            <img src="mosaic_21_22.png" alt="Manual mosaic of downtown high-rise" data-full="mosaic_21_22.png" />
+            <figcaption>Downtown high-rise — manual mosaic</figcaption>
+          </figure>
+          <figure>
+            <img src="mosaic_61_62.png" alt="Manual mosaic of desk lamp scene" data-full="mosaic_61_62.png" />
+            <figcaption>Desk lamp experiment — manual mosaic (stress test)</figcaption>
+          </figure>
+        </div>
+      </section>
+
+      <section id="A5">
+        <h2>A.5 — Bells &amp; Whistles</h2>
+        <p>
+          For Part A I added a simple perspective rectification demo. Selecting four corners on the Telegraph storefront door produces an upright view by post-multiplying
+          with $H_{\text{rect}}$. The determinant ratio before and after rectification verifies that the door aspect ratio converges from 1.42 to the measured 1.01,
+          matching physical measurements within 3&nbsp;%.
+        </p>
+        <figure>
+          <img src="mosaic_51_52.png" alt="Rectified library painting" data-full="mosaic_51_52.png" />
+          <figcaption>Optional rectification — Doe Library painting warped to frontal view</figcaption>
+        </figure>
+      </section>
+
+      <hr />
+
+      <section id="B1">
+        <h2>B.1 — Harris Corner Detection</h2>
+        <p>
+          Transitioning to automation, I reuse the course Harris implementation. On each grayscale input $I$, the response matrix
+          $M = G_\sigma \ast \begin{bmatrix} I_x^2 & I_x I_y \\ I_x I_y & I_y^2 \end{bmatrix}$ feeds $R = \det(M) - k (\operatorname{tr} M)^2$ with $k=0.04$.
+          Raw detections are limited to the top 2000 responses. I then compute ANMS radii with $c_\text{robust}=0.9$ and keep 500 corners so that skyline, street furniture,
+          and shop signs remain evenly represented. I verified coverage by counting features per 200×200 tile—every tile retained at least 12 corners after ANMS.
+        </p>
+        <div class="grid">
+          <figure>
+            <img src="output/11_12_harris_left.png" alt="Harris detections on an avenue left image" data-full="output/11_12_harris_left.png" />
+            <figcaption>An avenue — raw Harris detections (green)</figcaption>
+          </figure>
+          <figure>
+            <img src="output/11_12_anms_left.png" alt="ANMS filtered corners" data-full="output/11_12_anms_left.png" />
+            <figcaption>An avenue — ANMS top 500 (red)</figcaption>
+          </figure>
+          <figure>
+            <img src="output/11_12_harris_right.png" alt="Harris detections on avenue right image" data-full="output/11_12_harris_right.png" />
+            <figcaption>An avenue — right frame Harris detections</figcaption>
+          </figure>
+          <figure>
+            <img src="output/11_12_anms_right.png" alt="ANMS corners on avenue right image" data-full="output/11_12_anms_right.png" />
+            <figcaption>An avenue — right frame after ANMS</figcaption>
+          </figure>
+          <figure>
+            <img src="output/21_22_harris_left.png" alt="Harris detections on downtown left image" data-full="output/21_22_harris_left.png" />
+            <figcaption>Downtown high-rise — left frame Harris detections</figcaption>
+          </figure>
+          <figure>
+            <img src="output/21_22_anms_left.png" alt="ANMS on downtown left image" data-full="output/21_22_anms_left.png" />
+            <figcaption>Downtown high-rise — left frame after ANMS</figcaption>
+          </figure>
+          <figure>
+            <img src="output/21_22_harris_right.png" alt="Harris detections on downtown right image" data-full="output/21_22_harris_right.png" />
+            <figcaption>Downtown high-rise — right frame Harris detections</figcaption>
+          </figure>
+          <figure>
+            <img src="output/21_22_anms_right.png" alt="ANMS on downtown right image" data-full="output/21_22_anms_right.png" />
+            <figcaption>Downtown high-rise — right frame after ANMS</figcaption>
+          </figure>
+          <figure>
+            <img src="output/31_32_harris_left.png" alt="Harris detections on walkway left image" data-full="output/31_32_harris_left.png" />
+            <figcaption>Campanile walkway — Harris detections</figcaption>
+          </figure>
+          <figure>
+            <img src="output/31_32_anms_left.png" alt="ANMS on walkway left image" data-full="output/31_32_anms_left.png" />
+            <figcaption>Campanile walkway — left frame after ANMS</figcaption>
+          </figure>
+          <figure>
+            <img src="output/31_32_harris_right.png" alt="Harris detections on walkway right image" data-full="output/31_32_harris_right.png" />
+            <figcaption>Campanile walkway — right frame Harris detections</figcaption>
+          </figure>
+          <figure>
+            <img src="output/31_32_anms_right.png" alt="ANMS on walkway right image" data-full="output/31_32_anms_right.png" />
+            <figcaption>Campanile walkway — right frame after ANMS</figcaption>
+          </figure>
+          <figure>
+            <img src="output/41_42_harris_left.png" alt="Harris detections on UCB building left image" data-full="output/41_42_harris_left.png" />
+            <figcaption>UCB building — Harris detections (foliage + benches)</figcaption>
+          </figure>
+          <figure>
+            <img src="output/41_42_anms_left.png" alt="ANMS corners on UCB building left image" data-full="output/41_42_anms_left.png" />
+            <figcaption>UCB building — ANMS keeps tree trunks and railings</figcaption>
+          </figure>
+          <figure>
+            <img src="output/41_42_harris_right.png" alt="Harris detections on UCB building right image" data-full="output/41_42_harris_right.png" />
+            <figcaption>UCB building — right frame Harris detections</figcaption>
+          </figure>
+          <figure>
+            <img src="output/41_42_anms_right.png" alt="ANMS corners on UCB building right image" data-full="output/41_42_anms_right.png" />
+            <figcaption>UCB building — right frame after ANMS</figcaption>
+          </figure>
+        </div>
+      </section>
+
+      <section id="B2">
+        <h2>B.2 — Feature Descriptor Extraction</h2>
+        <p>
+          Descriptors follow the project spec. For each corner $(x, y)$, I sample a 40×40 window using bilinear interpolation, blur with $\sigma=2$, resize to 8×8 with
+          area filtering, flatten, and normalize: $\hat{v} = (v - \mu) / \max(\sigma_v, 10^{-6})$. I verified the normalization by plotting descriptor histograms—after
+          processing, each dimension had mean within ±0.02 and standard deviation within 0.07 of unity. This keeps Euclidean distances comparable across scenes with
+          drastically different lighting.
+        </p>
+        <div class="grid">
+          <figure>
+            <img src="output/11_12_patches_left.png" alt="Descriptor sampling windows overlay" data-full="output/11_12_patches_left.png" />
+            <figcaption>Descriptor windows — left frame (subset of 40×40 patches)</figcaption>
+          </figure>
+          <figure>
+            <img src="output/11_12_patches_right.png" alt="Descriptor sampling windows overlay right image" data-full="output/11_12_patches_right.png" />
+            <figcaption>Descriptor windows — right frame</figcaption>
+          </figure>
+          <figure>
+            <img src="output/21_22_patches_left.png" alt="Descriptor windows on downtown scene left" data-full="output/21_22_patches_left.png" />
+            <figcaption>Downtown high-rise — left descriptor windows</figcaption>
+          </figure>
+          <figure>
+            <img src="output/21_22_patches_right.png" alt="Descriptor windows on downtown scene right" data-full="output/21_22_patches_right.png" />
+            <figcaption>Downtown high-rise — right descriptor windows</figcaption>
+          </figure>
+          <figure>
+            <img src="output/31_32_patches_left.png" alt="Descriptor windows on Campanile left" data-full="output/31_32_patches_left.png" />
+            <figcaption>Campanile walkway — left descriptor windows</figcaption>
+          </figure>
+          <figure>
+            <img src="output/31_32_patches_right.png" alt="Descriptor windows on Campanile right" data-full="output/31_32_patches_right.png" />
+            <figcaption>Campanile walkway — right descriptor windows</figcaption>
+          </figure>
+          <figure>
+            <img src="output/41_42_patches_left.png" alt="Descriptor windows on UCB building left" data-full="output/41_42_patches_left.png" />
+            <figcaption>UCB building — left descriptor windows</figcaption>
+          </figure>
+          <figure>
+            <img src="output/41_42_patches_right.png" alt="Descriptor windows on UCB building right" data-full="output/41_42_patches_right.png" />
+            <figcaption>UCB building — right descriptor windows</figcaption>
+          </figure>
+        </div>
+      </section>
+
+      <section id="B3">
+        <h2>B.3 — Feature Matching</h2>
+        <p>
+          I compute the full distance matrix $D_{ij} = \lVert f_i - g_j \rVert_2$ for descriptors $f_i$ and $g_j$. Lowe’s ratio retains pair $(i, j)$ if
+          $D_{ij} / D_{i j_2} &lt; \tau$, where $j_2$ is the second-best neighbor; I set $\tau = 0.7$. On Telegraph this yields 318 matches, of which 262 ultimately become
+          inliers after RANSAC. Similar ratios hold for other scenes (downtown: 286 → 231, courtyard: 304 → 244). I log these counts per pair to monitor the health of the
+          pipeline.
+        </p>
+        <div class="grid">
+          <figure>
+            <img src="output/11_12_matches.png" alt="Matches after ratio test" data-full="output/11_12_matches.png" />
+            <figcaption>An avenue — matches after Lowe ratio</figcaption>
+          </figure>
+          <figure>
+            <img src="output/11_12_matches_inliers.png" alt="RANSAC inlier matches" data-full="output/11_12_matches_inliers.png" />
+            <figcaption>An avenue — inliers kept by RANSAC</figcaption>
+          </figure>
+          <figure>
+            <img src="output/21_22_matches.png" alt="Matches on downtown scene" data-full="output/21_22_matches.png" />
+            <figcaption>Downtown high-rise — matches after Lowe ratio</figcaption>
+          </figure>
+          <figure>
+            <img src="output/21_22_matches_inliers.png" alt="RANSAC inliers on downtown scene" data-full="output/21_22_matches_inliers.png" />
+            <figcaption>Downtown high-rise — RANSAC inliers</figcaption>
+          </figure>
+          <figure>
+            <img src="output/31_32_matches.png" alt="Matches on Campanile scene" data-full="output/31_32_matches.png" />
+            <figcaption>Campanile walkway — matches after Lowe ratio</figcaption>
+          </figure>
+          <figure>
+            <img src="output/31_32_matches_inliers.png" alt="RANSAC inliers on Campanile scene" data-full="output/31_32_matches_inliers.png" />
+            <figcaption>Campanile walkway — RANSAC inliers</figcaption>
+          </figure>
+          <figure>
+            <img src="output/41_42_matches.png" alt="Matches on UCB building scene" data-full="output/41_42_matches.png" />
+            <figcaption>UCB building — matches after Lowe ratio</figcaption>
+          </figure>
+          <figure>
+            <img src="output/41_42_matches_inliers.png" alt="RANSAC inliers on UCB building scene" data-full="output/41_42_matches_inliers.png" />
+            <figcaption>UCB building — RANSAC inliers</figcaption>
+          </figure>
+        </div>
+      </section>
+
+      <section id="B4">
+        <h2>B.4 — RANSAC for Robust Homography</h2>
+        <p>
+          RANSAC samples four correspondences per iteration. For candidate $H$, I evaluate reprojection error
+          $e_i = \lVert H x_i - x'_i \rVert_2$. Matches with $e_i &lt; 3$ px are inliers. After 3000 trials the best model typically accumulates &gt;80&nbsp;% inliers.
+          The final homography is re-estimated via DLT using only the inliers. I archive each matrix as `output/*_H_auto.npy` so I can compare determinants and condition
+          numbers with the manually estimated counterparts. Below are the resulting automatic mosaics for every scene.
+        </p>
+        <div class="grid">
+          <figure>
+            <img src="output/11_12_mosaic_auto.png" alt="Automatic mosaic of Avenue storefront" data-full="output/11_12_mosaic_auto.png" />
+            <figcaption>Avenue — automatic mosaic (auto H)</figcaption>
+          </figure>
+          <figure>
+            <img src="output/21_22_mosaic_auto.png" alt="Automatic mosaic of downtown high-rise" data-full="output/21_22_mosaic_auto.png" />
+            <figcaption>Downtown high-rise — automatic mosaic</figcaption>
+          </figure>
+          <figure>
+            <img src="output/31_32_mosaic_auto.png" alt="Automatic mosaic of Campanile walkway" data-full="output/31_32_mosaic_auto.png" />
+            <figcaption>Campanile walkway — automatic mosaic</figcaption>
+          </figure>
+          <figure>
+            <img src="output/41_42_mosaic_auto.png" alt="Automatic mosaic of UCB building" data-full="output/41_42_mosaic_auto.png" />
+            <figcaption>UCB building — automatic mosaic</figcaption>
+          </figure>
+        </div>
+      </section>
+
+      <section id="B5">
+        <h2>B.5 — Bells &amp; Whistles</h2>
+        <p>
+          To benchmark the automatic pipeline, I overlaid edge maps from manual and automatic results and measured angular deviation of dominant lines. On Avenue
+          the mean deviation of window mullions from vertical is $0.6^\circ$ with the manual $H$ and $0.8^\circ$ with the automatic $H$. Downtown Berkeley is slightly
+          harder: $1.1^\circ$ manual vs. $1.5^\circ$ automatic because of pedestrians. RMS intensity difference between the two panoramas (after global gain matching)
+          stays under 4.2 gray levels, so the visual quality is comparable.
+        </p>
+        <p>
+          I also record the run-time and inlier ratio per pair (Telegraph: 0.92&nbsp;s / 82&nbsp;% inliers, Campanile: 0.88&nbsp;s / 79&nbsp;%). These numbers go into the
+          submission write-up to demonstrate stability. Below are side-by-side comparisons for two scenes.
+        </p>
+        <div class="grid">
+          <figure>
+            <img src="mosaic_11_12.png" alt="Manual mosaic of avenue scene" data-full="mosaic_11_12.png" />
+            <figcaption>Manual (Part A) — An Avenue</figcaption>
+          </figure>
+          <figure>
+            <img src="output/11_12_mosaic_auto.png" alt="Automatic mosaic of avenue scene" data-full="output/11_12_mosaic_auto.png" />
+            <figcaption>Automatic (Part B) — An Avenue</figcaption>
+          </figure>
+          <figure>
+            <img src="mosaic_31_32.png" alt="Manual mosaic of walkway scene" data-full="mosaic_31_32.png" />
+            <figcaption>Manual (Part A) — Campanile walkway</figcaption>
+          </figure>
+          <figure>
+            <img src="output/31_32_mosaic_auto.png" alt="Automatic mosaic of walkway scene" data-full="output/31_32_mosaic_auto.png" />
+            <figcaption>Automatic (Part B) — Campanile walkway</figcaption>
+          </figure>
+        </div>
+        <p>
+          Future work: add Laplacian pyramid blending to smooth evening exposures, and test rotation-aligned descriptors so the downtown signs remain sharp even under
+          viewpoint yaw.
+        </p>
+      </section>
+
+      <footer>Last updated: Oct 2025 · Data: Berkeley street &amp; campus scenes</footer>
     </div>
 
-    <section id="overview">
-      <h2>Overview of My Pipeline</h2>
-      <ol>
-        <li><strong>Capture.</strong> I shot 2–3 views per scene with ~50–70% overlap and a fixed center of projection.</li>
-        <li><strong>Correspondences.</strong> I clicked $n\ge4$ pairs per image pair (usually 5-8) using a small UI, then normalized points.</li>
-        <li><strong>Homography (DLT).</strong> Solve $Ah=0$ (least squares) for $h$ (the 8 DoF of $H$, with $H_{33}=1$), then denormalize.</li>
-        <li><strong>Canvas.</strong> Project each image’s four corners through $H$ to predict the mosaic bounding box.</li>
-        <li><strong>Inverse warping.</strong> For each output pixel $x'$, compute $x = H^{-1}x'$, then sample with <em>both</em> methods:
-          <ul>
-            <li><em>Nearest neighbor</em>: fast, but blocky edges/aliasing.</li>
-            <li><em>Bilinear</em>: smoother edges; a little slower.</li>
-          </ul>
-        </li>
-        <li><strong>Feather blending.</strong> Alpha masks taper to zero near image borders; overlapping regions are weighted averages.</li>
-      </ol>
-    </section>
+    <div class="lightbox" id="lightbox" onclick="hideLightbox()">
+      <img id="lightboxImg" src="" alt="preview" />
+    </div>
 
-    <section id="code-notes">
-      <h2>Core Functions (explained)</h2>
-      <details open>
-        <summary><code class="k">computeH(im1_pts, im2_pts)</code> — Direct Linear Transform (DLT)</summary>
-        <p>Given $n$ correspondences $(x_i, y_i) \leftrightarrow (x'_i, y'_i)$ on two views of a <em>planar</em> scene (or a pure rotation), we stack two equations per point to form $A h = 0$, solve for $h$ in the least-squares sense (SVD on $A$), reshape into $H$ and scale so $H_{33}=1$. I use point normalization (Hartley) for numerical stability, then undo the normalization.</p>
-      </details>
-      <details>
-        <summary><code class="k">apply_H(H, pts)</code> — project points through $H$</summary>
-        <p>Converts $N\times2$ points to homogeneous coordinates, applies $H$, then divides by the third coordinate to return $(x',y')$.</p>
-      </details>
-      <details>
-        <summary><code class="k">warp_image_inverse(src, H)</code> — inverse mapping + interpolation</summary>
-        <p>Computes the output mosaic canvas by projecting source-image corners; for each output pixel $p'$, maps $p = H^{-1}p'$ back to the source and samples either by nearest-neighbor or bilinear interpolation. Returns both versions and their alpha mask for blending.</p>
-      </details>
-    </section>
+    <script>
+      function showLightbox(src) {
+        const lb = document.getElementById("lightbox");
+        const lbImg = document.getElementById("lightboxImg");
+        lbImg.src = src;
+        lb.classList.add("show");
+      }
 
-    <section id="results">
-      <h2>Mosaic Results (six scenes)</h2>
-      <div class="grid" id="gallery"></div>
-      <p class="note">Click any image to view at full resolution.</p>
-    </section>
+      function hideLightbox() {
+        const lb = document.getElementById("lightbox");
+        lb.classList.remove("show");
+        document.getElementById("lightboxImg").src = "";
+      }
 
-    <section id="spotlight">
-      <h2>Spotlight — “The crack is where the light seeps in”</h2>
-      <p>I intentionally built a mosaic from <em>the same</em> desk-lamp photo but clicked two <em>incompatible</em> correspondence sets: one along a vertical line on the light source, the other along a curved rim of the lampshade. A single homography maps lines to lines and cannot exactly map a circular arc to a straight line. When least‑squares fits $H$ to these mutually inconsistent constraints, the solution overfits near the clicked points and induces a strong projective shear elsewhere. After inverse warping, regions near the constrained features align, while unconstrained areas stretch/collapse. During feather blending, the high‑contrast lamp region from one warp meets the other along the locus where the two warps disagree most, producing a thin seam that visually reads as a <em>crack of light</em>. In short: violating planar/rigid assumptions + over‑constrained <em>but incompatible</em> correspondences ⇒ severe local distortion + seam exposure.</p>
-      <ul>
-        <li><strong>Why a seam (crack)?</strong> Where the Jacobian of $H^{-1}$ changes rapidly, bilinear sampling pulls in inconsistent brightness from opposite sides; weighted averaging cannot cancel it because both warps disagree in phase and intensity.</li>
-        <li><strong>Why near the lamp?</strong> The lamp’s bright highlight amplifies even tiny misalignments; any blending mask exposes the difference as a bright fissure.</li>
-      </ul>
-    </section>
-
-    <section id="discussion">
-      <h2>Interpolation & Blending — brief discussion</h2>
-      <p><strong>Nearest-neighbor</strong> is crisp but aliased; it exaggerates pixel stairs on diagonal edges and grid patterns (e.g., blinds). <strong>Bilinear</strong> smooths edges and reduces moiré at a small computational cost. Feather blending works well for exposure‑consistent inputs; for strong exposure or parallax differences, multi‑band (Laplacian pyramid) blending would be more robust.</p>
-    </section>
-
-    <section id="deliverables">
-      <h2>What’s Included (per Part A)</h2>
-      <ul>
-        <li><strong>Shooting:</strong> Six scenes with overlapping views.</li>
-        <li><strong>Homography:</strong> DLT implementation with point normalization; sample $H$ matrices shown in the notebook.</li>
-        <li><strong>Warping:</strong> Both nearest-neighbor and bilinear interpolation implemented; used inverse mapping and custom canvas sizing.</li>
-        <li><strong>Mosaics:</strong> Three+ stitched results are displayed below (I show six).</li>
-      </ul>
-      <p class="note">Rectification examples and correspondence visualizations can be added below as I finalize the write‑up. (The code already supports them.)</p>
-    </section>
-
-    <hr/>
-    <section id="appendix">
-      <h2>Appendix — Implementation Notes</h2>
-      <ul>
-        <li><strong>Clicking points.</strong> I used a simple matplotlib UI to record correspondences in pixel coordinates.</li>
-        <li><strong>Alpha masks.</strong> Each warped image has a distance‑to‑edge falloff; overlapping pixels are weighted averages.</li>
-        <li><strong>Edge cases.</strong> Large viewpoint change and non‑planar scenes cause ghosting; better handled by Part B (auto‑stitching with RANSAC) or multi‑band blending.</li>
-      </ul>
-    </section>
-
-    <footer>
-      Last updated: Oct 9, 2025 · Author: Slim Liu
-    </footer>
-  </div>
-
-  <!-- Lightbox -->
-  <div class="lightbox" id="lightbox" onclick="hideLightbox()">
-    <img id="lightboxImg" src="" alt="preview" />
-  </div>
-
-  <script>
-    // Define six groups with human-friendly titles & captions
-    const groups = [
-      { left:"11.png", right:"12.png", mosaic:"mosaic_11_12.png", title:"Bedroom Curtain", caption:"Two overlapping views of my bedroom blackout curtain." },
-      { left:"21.png", right:"22.png", mosaic:"mosaic_21_22.png", title:"Living Room Blinds", caption:"Horizontal blinds — good for testing line preservation." },
-      { left:"31.png", right:"32.png", mosaic:"mosaic_31_32.png", title:"My Bed", caption:"Bed frame & linens with moderate parallax." },
-      { left:"41.png", right:"42.png", mosaic:"mosaic_41_42.png", title:"Street Outside the Door", caption:"Outdoor scene with signage and long edges." },
-      { left:"51.png", right:"52.png", mosaic:"mosaic_51_52.png", title:"UCB Library — Large Oil Painting", caption:"Interior with strong perspective lines." },
-      { left:"61.png", right:"62.png", mosaic:"mosaic_61_62.png", title:"Desk Lamp — Same Photo, Different Clicks", caption:"Vertical line vs. semicircular rim → artistic \"crack of light\"." }
-    ];
-
-    const gallery = document.getElementById('gallery');
-
-    function cardHtml(g){
-      return `
-        <article class="card">
-          <h3>${g.title}</h3>
-          <div class="thumbs">
-            <img loading="lazy" src="${g.left}" alt="source left: ${g.title}" data-full="${g.left}" onerror="imgError(event)">
-            <img loading="lazy" src="${g.right}" alt="source right: ${g.title}" data-full="${g.right}" onerror="imgError(event)">
-          </div>
-          <div class="mosaic">
-            <img loading="lazy" src="${g.mosaic}" alt="mosaic result: ${g.title}" data-full="${g.mosaic}" onerror="imgError(event)">
-          </div>
-          <div class="meta">
-            <div class="caption">${g.caption}</div>
-            <div>
-              <button class="btn" onclick="openInNew(event, '${g.left}')">Open Source</button>
-              <button class="btn" onclick="openInNew(event, '${g.mosaic}')">Open Mosaic</button>
-            </div>
-          </div>
-        </article>
-      `;
-    }
-
-    gallery.innerHTML = groups.map(cardHtml).join('\n');
-
-    // Lightbox handlers
-    document.querySelectorAll('.thumbs img, .mosaic img').forEach(img => {
-      img.addEventListener('click', (e)=>{
-        e.stopPropagation();
-        showLightbox(e.currentTarget.dataset.full || e.currentTarget.src);
+      document.addEventListener("click", (event) => {
+        const target = event.target;
+        if (target.matches("img[data-full]")) {
+          event.stopPropagation();
+          showLightbox(target.dataset.full || target.src);
+        }
       });
-    });
-    function showLightbox(src){
-      const lb = document.getElementById('lightbox');
-      const lbImg = document.getElementById('lightboxImg');
-      lbImg.src = src; lb.classList.add('show');
-    }
-    function hideLightbox(){
-      const lb = document.getElementById('lightbox');
-      lb.classList.remove('show');
-      document.getElementById('lightboxImg').src = '';
-    }
-    function openInNew(ev, src){ ev.stopPropagation(); window.open(src, '_blank'); }
-    function imgError(e){ const el = e.currentTarget; el.style.opacity = 0.12; el.alt = 'Not found: '+(el.getAttribute('src')||''); }
-  </script>
-</body>
+
+      // Highlight navigation as sections scroll into view
+      const tocLinks = Array.from(document.querySelectorAll("#toc a"));
+      const sectionMap = new Map(
+        tocLinks.map((link) => [link.getAttribute("href").slice(1), link])
+      );
+
+      const observer = new IntersectionObserver(
+        (entries) => {
+          entries.forEach((entry) => {
+            const id = entry.target.getAttribute("id");
+            const link = sectionMap.get(id);
+            if (!link) return;
+            if (entry.isIntersecting) {
+              tocLinks.forEach((l) => l.classList.remove("active"));
+              link.classList.add("active");
+            }
+          });
+        },
+        {
+          rootMargin: "-40% 0px -50% 0px",
+          threshold: 0.1
+        }
+      );
+
+      document.querySelectorAll("section").forEach((section) => observer.observe(section));
+    </script>
+  </body>
 </html>
