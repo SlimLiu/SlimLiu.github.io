@@ -16,58 +16,63 @@ description_zh: 刘盎希的文学作品、AI 思考与个人随笔。
 {% assign essay_posts = site.posts | where: "category", "essay" %}
 {% assign literature_posts = site.posts | where: "category", "literature" %}
 
-<nav class="blog-category-nav" aria-label="Blog categories">
-  <a href="#ai-notes">
-    <span class="category-number">01</span>
-    <span class="category-name">AI Notes</span>
-    <span class="category-count">{{ ai_posts | size }}</span>
-  </a>
-  <a href="#essay">
-    <span class="category-number">02</span>
-    <span class="category-name">Essay</span>
-    <span class="category-count">{{ essay_posts | size }}</span>
-  </a>
-  <a href="#literature">
-    <span class="category-number">03</span>
-    <span class="category-name">
-      <span class="i18n-zh">文学</span>
-      <span class="i18n-en">Literature</span>
-    </span>
-    <span class="category-count">{{ literature_posts | size }}</span>
-  </a>
-</nav>
+<div class="blog-home-layout">
+  <aside class="blog-sidebar">
+    <p class="sidebar-label">
+      <span class="i18n-zh">专栏</span>
+      <span class="i18n-en">Sections</span>
+    </p>
+    <nav class="blog-category-nav" aria-label="Blog categories">
+      <a href="#ai-notes">
+        <span class="category-name">AI Notes</span>
+        <span class="category-count">{{ ai_posts | size }}</span>
+      </a>
+      <a href="#essay">
+        <span class="category-name">Essay</span>
+        <span class="category-count">{{ essay_posts | size }}</span>
+      </a>
+      <a href="#literature">
+        <span class="category-name">
+          <span class="i18n-zh">文学</span>
+          <span class="i18n-en">Literature</span>
+        </span>
+        <span class="category-count">{{ literature_posts | size }}</span>
+      </a>
+    </nav>
+  </aside>
 
-<div class="blog-catalog">
-  <section class="blog-category-section" id="ai-notes" aria-labelledby="ai-notes-title">
-    <div class="category-heading">
-      <h2 id="ai-notes-title">AI Notes</h2>
-      <span>{{ ai_posts | size }}</span>
-    </div>
-    <div class="post-list">
-      {% include post-list.html posts=ai_posts %}
-    </div>
-  </section>
+  <div class="blog-catalog">
+    <section class="blog-category-section" id="ai-notes" aria-labelledby="ai-notes-title">
+      <div class="category-heading">
+        <h2 id="ai-notes-title">AI Notes</h2>
+        <span>{{ ai_posts | size }}</span>
+      </div>
+      <div class="post-list">
+        {% include post-list.html posts=ai_posts %}
+      </div>
+    </section>
 
-  <section class="blog-category-section" id="essay" aria-labelledby="essay-title">
-    <div class="category-heading">
-      <h2 id="essay-title">Essay</h2>
-      <span>{{ essay_posts | size }}</span>
-    </div>
-    <div class="post-list">
-      {% include post-list.html posts=essay_posts %}
-    </div>
-  </section>
+    <section class="blog-category-section" id="essay" aria-labelledby="essay-title">
+      <div class="category-heading">
+        <h2 id="essay-title">Essay</h2>
+        <span>{{ essay_posts | size }}</span>
+      </div>
+      <div class="post-list">
+        {% include post-list.html posts=essay_posts %}
+      </div>
+    </section>
 
-  <section class="blog-category-section" id="literature" aria-labelledby="literature-title">
-    <div class="category-heading">
-      <h2 id="literature-title">
-        <span class="i18n-zh">文学</span>
-        <span class="i18n-en">Literature</span>
-      </h2>
-      <span>{{ literature_posts | size }}</span>
-    </div>
-    <div class="post-list">
-      {% include post-list.html posts=literature_posts %}
-    </div>
-  </section>
+    <section class="blog-category-section" id="literature" aria-labelledby="literature-title">
+      <div class="category-heading">
+        <h2 id="literature-title">
+          <span class="i18n-zh">文学</span>
+          <span class="i18n-en">Literature</span>
+        </h2>
+        <span>{{ literature_posts | size }}</span>
+      </div>
+      <div class="post-list">
+        {% include post-list.html posts=literature_posts %}
+      </div>
+    </section>
+  </div>
 </div>

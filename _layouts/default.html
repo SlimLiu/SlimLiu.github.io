@@ -49,9 +49,19 @@
 
     <header class="site-header">
       <div class="header-inner">
-        <a class="home-link" href="{{ '/' | relative_url }}">
-          <span class="i18n-zh">刘盎希</span>
-          <span class="i18n-en">Angxi Liu</span>
+        {% if page.layout == "post" %}
+          {% assign back_url = "/blog/" %}
+          {% assign back_zh = "返回 Blog" %}
+          {% assign back_en = "Back to Blog" %}
+        {% else %}
+          {% assign back_url = "/" %}
+          {% assign back_zh = "返回主页" %}
+          {% assign back_en = "Back to Home" %}
+        {% endif %}
+        <a class="home-link blog-back-arrow" href="{{ back_url | relative_url }}">
+          <span aria-hidden="true">←</span>
+          <span class="visually-hidden i18n-zh">{{ back_zh }}</span>
+          <span class="visually-hidden i18n-en">{{ back_en }}</span>
         </a>
 
         <nav class="site-nav" aria-label="Page sections">
@@ -59,7 +69,7 @@
             <span class="i18n-zh">主页</span>
             <span class="i18n-en">Home</span>
           </a>
-          <a href="{{ '/blog/' | relative_url }}" {% if page.url == '/blog/' %}aria-current="page"{% endif %}>Blog</a>
+          <a href="{{ '/blog/' | relative_url }}" {% if page.url contains '/blog/' %}aria-current="page"{% endif %}>Blog</a>
           <a href="{{ '/projects/cs180/' | relative_url }}">CS180</a>
           <button class="language-toggle" type="button" aria-label="切换到中文">
             <span class="i18n-zh" aria-hidden="true">EN</span>
