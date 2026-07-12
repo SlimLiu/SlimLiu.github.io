@@ -159,7 +159,7 @@ a {
 
 .profile-layout {
   display: grid;
-  grid-template-columns: 13.5rem minmax(0, 1fr);
+  grid-template-columns: 12.25rem minmax(0, 1fr);
   gap: clamp(3rem, 6vw, 5.25rem);
   width: min(100%, var(--max-width));
   margin: 0 auto;
@@ -178,9 +178,9 @@ a {
 
 .avatar-frame {
   position: relative;
-  width: 10.5rem;
-  height: 10.5rem;
-  margin-bottom: 1.35rem;
+  width: 8.25rem;
+  height: 8.25rem;
+  margin-bottom: 1.1rem;
   overflow: hidden;
   border: 1px solid var(--line);
   border-radius: 50%;
@@ -191,18 +191,54 @@ a {
 .avatar-frame img {
   width: 100%;
   height: 100%;
-  transform: translate(-28%, 23%) scale(1.48);
-  transform-origin: center;
   object-fit: cover;
-  object-position: 70% 34%;
+  object-position: center 48%;
 }
 
 .profile-identity h1 {
   margin: 0 0 0.35rem;
-  font-size: 1.65rem;
+  font-size: 1.5rem;
   font-weight: 650;
   letter-spacing: -0.035em;
   line-height: 1.22;
+}
+
+.creator-profile {
+  display: grid;
+  gap: 0.12rem;
+  margin: 0.75rem 0 0.9rem;
+  padding: 0.62rem 0.7rem;
+  border-left: 3px solid #ff2442;
+  border-radius: 0.18rem 0.3rem 0.3rem 0.18rem;
+  background: var(--surface);
+  color: var(--text);
+  font-size: 0.72rem;
+  line-height: 1.45;
+  text-decoration: none;
+}
+
+.creator-profile:hover {
+  color: var(--text);
+}
+
+.creator-platform {
+  display: flex;
+  gap: 0.32rem;
+  align-items: baseline;
+  font-weight: 650;
+}
+
+.creator-platform > span:last-child {
+  color: #ff2442;
+}
+
+.creator-topic {
+  color: var(--muted);
+}
+
+.creator-stats {
+  color: var(--link);
+  font-variant-numeric: tabular-nums;
 }
 
 .institution,
@@ -480,8 +516,8 @@ a {
 
   .avatar-frame {
     flex: 0 0 auto;
-    width: 7.2rem;
-    height: 7.2rem;
+    width: 5.6rem;
+    height: 5.6rem;
     margin: 0;
   }
 
@@ -519,8 +555,8 @@ a {
   }
 
   .avatar-frame {
-    width: 6rem;
-    height: 6rem;
+    width: 4.8rem;
+    height: 4.8rem;
   }
 
   .profile-links {

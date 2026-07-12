@@ -1,21 +1,21 @@
 <!doctype html>
-<html lang="zh-CN" data-language="zh">
+<html lang="en" data-language="en">
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="color-scheme" content="light dark" />
     <meta
       name="description"
-      content="刘盎希，西安交通大学人工智能专业本科生，关注多智能体决策、具身智能、博弈论与计算机视觉。"
+      content="Angxi Liu is an AI undergraduate at Xi’an Jiaotong University, interested in multi-agent decision-making, embodied intelligence, game theory, and computer vision."
     />
     <meta name="author" content="刘盎希" />
     <meta property="og:type" content="profile" />
     <meta property="og:title" content="刘盎希" />
-    <meta property="og:description" content="一个不喜欢 AI 的 AI 专业学生。" />
+    <meta property="og:description" content="An AI student who does not particularly like AI." />
     <meta property="og:url" content="https://slimliu.github.io/" />
     <meta property="og:image" content="https://slimliu.github.io/assets/profile.jpg" />
-    <meta property="og:locale" content="zh_CN" />
-    <meta property="og:locale:alternate" content="en_US" />
+    <meta property="og:locale" content="en_US" />
+    <meta property="og:locale:alternate" content="zh_CN" />
     <link rel="canonical" href="https://slimliu.github.io/" />
     <link rel="preload" href="assets/profile.jpg" as="image" />
     <link rel="stylesheet" href="styles.css" />
@@ -24,14 +24,11 @@
       (() => {
         let saved = null;
         try {
-          saved = localStorage.getItem("angxi-language");
+          saved = localStorage.getItem("angxi-language-v2");
         } catch (_) {
           // Language detection still works when storage is unavailable.
         }
-        const preferred = navigator.language.toLowerCase().startsWith("zh")
-          ? "zh"
-          : "en";
-        document.documentElement.dataset.language = saved || preferred;
+        document.documentElement.dataset.language = saved === "zh" ? "zh" : "en";
       })();
     </script>
     <script type="application/ld+json">
@@ -43,7 +40,10 @@
         "url": "https://slimliu.github.io/",
         "image": "https://slimliu.github.io/assets/profile.jpg",
         "email": "mailto:liuangxi092@gmail.com",
-        "sameAs": ["https://github.com/SlimLiu"],
+        "sameAs": [
+          "https://github.com/SlimLiu",
+          "https://xhslink.com/m/4pIQ0oinxMk"
+        ],
         "affiliation": {
           "@type": "CollegeOrUniversity",
           "name": "Xi'an Jiaotong University"
@@ -74,7 +74,7 @@
             <span class="i18n-en">Experience</span>
           </a>
           <a href="projects/cs180/">CS180</a>
-          <button class="language-toggle" type="button" aria-label="Switch to English">
+          <button class="language-toggle" type="button" aria-label="切换到中文">
             <span class="i18n-zh" aria-hidden="true">EN</span>
             <span class="i18n-en" aria-hidden="true">中</span>
           </button>
@@ -88,7 +88,7 @@
           <div class="avatar-frame">
             <img
               src="assets/profile.jpg"
-              alt="刘盎希在金门大桥前的照片"
+              alt="刘盎希 / Angxi Liu at the Golden Gate Bridge"
               width="1050"
               height="1400"
               fetchpriority="high"
@@ -97,6 +97,26 @@
 
           <div class="profile-identity">
             <h1 id="profile-name">刘盎希</h1>
+            <a
+              class="creator-profile"
+              href="https://xhslink.com/m/4pIQ0oinxMk"
+              target="_blank"
+              rel="noreferrer"
+            >
+              <span class="creator-platform">
+                <span class="i18n-zh">小红书 · Kenny</span>
+                <span class="i18n-en">Xiaohongshu · Kenny</span>
+                <span aria-hidden="true">↗</span>
+              </span>
+              <span class="creator-topic">
+                <span class="i18n-zh">高考语文经验与知识分享</span>
+                <span class="i18n-en">Gaokao Chinese language content</span>
+              </span>
+              <span class="creator-stats">
+                <span class="i18n-zh">10.8 万粉丝 · 47.1 万获赞与收藏</span>
+                <span class="i18n-en">108K followers · 471K likes &amp; saves</span>
+              </span>
+            </a>
             <p class="institution">
               <span class="i18n-zh">西安交通大学</span>
               <span class="i18n-en">Xi’an Jiaotong University</span>
@@ -192,8 +212,8 @@
             <li>
               <time datetime="2025-08">2025.08</time>
               <p>
-                <span class="i18n-zh">完成基于 Dify 的智能客服系统实习项目。</span>
-                <span class="i18n-en">Completed an intelligent customer service system internship project built with Dify.</span>
+                <span class="i18n-zh">完成基于 RAG 的智能客服系统实习项目。</span>
+                <span class="i18n-en">Completed a RAG-based intelligent customer service system internship project.</span>
               </p>
             </li>
           </ul>
@@ -287,8 +307,8 @@
             <article class="entry">
               <div class="entry-heading">
                 <h3>
-                  <span class="i18n-zh">Dify 智能客服系统</span>
-                  <span class="i18n-en">Intelligent Customer Service System with Dify</span>
+                  <span class="i18n-zh">基于 RAG 的智能客服系统</span>
+                  <span class="i18n-en">RAG-based Intelligent Customer Service System</span>
                 </h3>
                 <time datetime="2025-07/2025-08">2025.07—08</time>
               </div>
@@ -297,8 +317,8 @@
                 <span class="i18n-en">AI Internship Project</span>
               </p>
               <p>
-                <span class="i18n-zh">本地部署 Dify，接入企业知识库，并搭建包含文档索引、检索、提示模板与回答生成的 RAG 工作流。</span>
-                <span class="i18n-en">Deployed Dify locally, integrated an enterprise knowledge base, and built a RAG workflow covering document indexing, retrieval, prompt templates, and response generation.</span>
+                <span class="i18n-zh">接入企业知识库，并搭建包含文档索引、检索、提示模板与回答生成的 RAG 工作流。</span>
+                <span class="i18n-en">Integrated an enterprise knowledge base and built a RAG workflow covering document indexing, retrieval, prompt templates, and response generation.</span>
               </p>
             </article>
           </div>

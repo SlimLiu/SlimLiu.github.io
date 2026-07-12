@@ -37,7 +37,7 @@
     if (ogLocale) ogLocale.content = copy[next].locale;
     if (persist) {
       try {
-        localStorage.setItem("angxi-language", next);
+        localStorage.setItem("angxi-language-v2", next);
       } catch (_) {
         // The switch still works when browser storage is unavailable.
       }
