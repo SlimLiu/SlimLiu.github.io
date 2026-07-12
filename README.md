@@ -1,6 +1,6 @@
 # SlimLiu.github.io
 
-Personal website for 刘昂熙 (Angxi Liu), hosted with GitHub Pages.
+Personal website for 刘盎希 (Angxi Liu), hosted with GitHub Pages.
 
 ## Structure
 

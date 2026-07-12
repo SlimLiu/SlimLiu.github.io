@@ -8,8 +8,8 @@
   const copy = {
     zh: {
       description:
-        "刘昂熙，西安交通大学人工智能专业本科生，关注人工智能、计算机视觉、体育与文学。",
-      ogDescription: "我是一个不喜欢 AI 的 AI 专业学生。",
+        "刘盎希，西安交通大学人工智能专业本科生，关注多智能体决策、具身智能、博弈论与计算机视觉。",
+      ogDescription: "一个不喜欢 AI 的 AI 专业学生。",
       locale: "zh_CN",
       label: "Switch to English",
     },
@@ -50,5 +50,6 @@
     setLanguage(root.dataset.language === "zh" ? "en" : "zh");
   });
 
-  document.getElementById("current-year").textContent = new Date().getFullYear();
+  const year = document.getElementById("current-year");
+  if (year) year.textContent = new Date().getFullYear();
 })();
