@@ -14,8 +14,8 @@ content:
     path: _posts
     format: yaml-frontmatter
     filename:
-      template: "{year}-{month}-{day}-{primary}.md"
-      field: create
+      template: "{fields.date}-{fields.slug}.md"
+      field: false
     view:
       fields: [title, date, category, language, published]
       primary: title
@@ -27,6 +27,10 @@ content:
     fields:
       - name: title
         label: Title
+        type: string
+        required: true
+      - name: slug
+        label: URL Slug (English, e.g. ai-employment-anxiety)
         type: string
         required: true
       - name: date
@@ -76,4 +80,3 @@ content:
           media: blog_images
           rename: safe
           switcher: true
-

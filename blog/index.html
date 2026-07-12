@@ -12,68 +12,62 @@ description_zh: 刘盎希的文学作品、AI 思考与个人随笔。
   <p class="i18n-en">A home for literary work and notes on AI, technology, and life.</p>
 </section>
 
-<section class="blog-archive" aria-labelledby="archive-title">
-  <div class="archive-heading">
-    <h2 id="archive-title">
-      <span class="i18n-zh">全部文章</span>
-      <span class="i18n-en">All writing</span>
-    </h2>
-    <div class="category-filters" aria-label="Filter posts by category">
-      <button type="button" class="filter-button is-active" data-filter="all">
-        <span class="i18n-zh">全部</span>
-        <span class="i18n-en">All</span>
-      </button>
-      <button type="button" class="filter-button" data-filter="literature">
+{% assign ai_posts = site.posts | where: "category", "ai" %}
+{% assign essay_posts = site.posts | where: "category", "essay" %}
+{% assign literature_posts = site.posts | where: "category", "literature" %}
+
+<nav class="blog-category-nav" aria-label="Blog categories">
+  <a href="#ai-notes">
+    <span class="category-number">01</span>
+    <span class="category-name">AI Notes</span>
+    <span class="category-count">{{ ai_posts | size }}</span>
+  </a>
+  <a href="#essay">
+    <span class="category-number">02</span>
+    <span class="category-name">Essay</span>
+    <span class="category-count">{{ essay_posts | size }}</span>
+  </a>
+  <a href="#literature">
+    <span class="category-number">03</span>
+    <span class="category-name">
+      <span class="i18n-zh">文学</span>
+      <span class="i18n-en">Literature</span>
+    </span>
+    <span class="category-count">{{ literature_posts | size }}</span>
+  </a>
+</nav>
+
+<div class="blog-catalog">
+  <section class="blog-category-section" id="ai-notes" aria-labelledby="ai-notes-title">
+    <div class="category-heading">
+      <h2 id="ai-notes-title">AI Notes</h2>
+      <span>{{ ai_posts | size }}</span>
+    </div>
+    <div class="post-list">
+      {% include post-list.html posts=ai_posts %}
+    </div>
+  </section>
+
+  <section class="blog-category-section" id="essay" aria-labelledby="essay-title">
+    <div class="category-heading">
+      <h2 id="essay-title">Essay</h2>
+      <span>{{ essay_posts | size }}</span>
+    </div>
+    <div class="post-list">
+      {% include post-list.html posts=essay_posts %}
+    </div>
+  </section>
+
+  <section class="blog-category-section" id="literature" aria-labelledby="literature-title">
+    <div class="category-heading">
+      <h2 id="literature-title">
         <span class="i18n-zh">文学</span>
         <span class="i18n-en">Literature</span>
-      </button>
-      <button type="button" class="filter-button" data-filter="ai">
-        <span class="i18n-zh">AI 随笔</span>
-        <span class="i18n-en">AI Notes</span>
-      </button>
-      <button type="button" class="filter-button" data-filter="essay">
-        <span class="i18n-zh">随笔</span>
-        <span class="i18n-en">Essays</span>
-      </button>
+      </h2>
+      <span>{{ literature_posts | size }}</span>
     </div>
-  </div>
-
-  <div class="post-list" data-post-list>
-    {% for post in site.posts %}
-      {% case post.category %}
-        {% when "literature" %}
-          {% assign category_en = "Literature" %}
-          {% assign category_zh = "文学" %}
-        {% when "ai" %}
-          {% assign category_en = "AI Notes" %}
-          {% assign category_zh = "AI 随笔" %}
-        {% else %}
-          {% assign category_en = "Essays" %}
-          {% assign category_zh = "随笔" %}
-      {% endcase %}
-      <article class="post-list-item" data-post-category="{{ post.category }}" lang="{% if post.language == 'en' %}en{% else %}zh-CN{% endif %}">
-        <div class="post-list-meta">
-          <time datetime="{{ post.date | date_to_xmlschema }}">{{ post.date | date: "%Y.%m.%d" }}</time>
-          <span>
-            <span class="i18n-zh">{{ category_zh }}</span>
-            <span class="i18n-en">{{ category_en }}</span>
-          </span>
-          <span>{% if post.language == "en" %}EN{% else %}中文{% endif %}</span>
-        </div>
-        <h3><a href="{{ post.url | relative_url }}">{{ post.title }}</a></h3>
-        <p>{{ post.excerpt | strip_html }}</p>
-        <a class="read-link" href="{{ post.url | relative_url }}">
-          <span class="i18n-zh">阅读全文</span>
-          <span class="i18n-en">Read article</span>
-          <span aria-hidden="true">→</span>
-        </a>
-      </article>
-    {% endfor %}
-  </div>
-
-  <p class="empty-state" data-empty-state hidden>
-    <span class="i18n-zh">这个分类暂时还没有文章。</span>
-    <span class="i18n-en">No writing in this category yet.</span>
-  </p>
-</section>
-
+    <div class="post-list">
+      {% include post-list.html posts=literature_posts %}
+    </div>
+  </section>
+</div>

@@ -3,7 +3,7 @@ description: Personal website and writing by Angxi Liu.
 url: https://slimliu.github.io
 baseurl: ""
 timezone: Asia/Shanghai
-permalink: /blog/:title/
+permalink: /blog/:slug/
 slugify_mode: raw
 markdown: kramdown
 goatcounter_code: ""
@@ -19,4 +19,3 @@ exclude:
   - Gemfile
   - Gemfile.lock
   - README.md
-

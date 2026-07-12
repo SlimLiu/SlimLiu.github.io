@@ -1,0 +1,23 @@
+{% if include.posts.size > 0 %}
+  {% for post in include.posts %}
+    <article class="post-list-item" lang="{% if post.language == 'en' %}en{% else %}zh-CN{% endif %}">
+      <div class="post-list-meta">
+        <time datetime="{{ post.date | date_to_xmlschema }}">{{ post.date | date: "%Y.%m.%d" }}</time>
+        <span>{% if post.language == "en" %}EN{% else %}中文{% endif %}</span>
+      </div>
+      <h3><a href="{{ post.url | relative_url }}">{{ post.title }}</a></h3>
+      <p>{{ post.excerpt | strip_html }}</p>
+      <a class="read-link" href="{{ post.url | relative_url }}">
+        <span class="i18n-zh">阅读全文</span>
+        <span class="i18n-en">Read article</span>
+        <span aria-hidden="true">→</span>
+      </a>
+    </article>
+  {% endfor %}
+{% else %}
+  <p class="empty-state">
+    <span class="i18n-zh">这个分类暂时还没有文章。</span>
+    <span class="i18n-en">No writing in this category yet.</span>
+  </p>
+{% endif %}
+

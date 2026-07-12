@@ -14,10 +14,10 @@ layout: default
 {% endcase %}
 
 <article class="post" lang="{% if page.language == 'en' %}en{% else %}zh-CN{% endif %}">
-  <a class="back-link" href="{{ '/blog/' | relative_url }}">
+  <a class="back-link" href="{{ '/' | relative_url }}">
     <span aria-hidden="true">←</span>
-    <span class="i18n-zh">返回 Blog</span>
-    <span class="i18n-en">Back to Blog</span>
+    <span class="i18n-zh">返回主页</span>
+    <span class="i18n-en">Back to Home</span>
   </a>
 
   <header class="post-header">
@@ -66,4 +66,3 @@ layout: default
     {% endif %}
   </nav>
 </article>
-
