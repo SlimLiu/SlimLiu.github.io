@@ -203,44 +203,6 @@ a {
   line-height: 1.22;
 }
 
-.creator-profile {
-  display: grid;
-  gap: 0.12rem;
-  margin: 0.75rem 0 0.9rem;
-  padding: 0.62rem 0.7rem;
-  border-left: 3px solid #ff2442;
-  border-radius: 0.18rem 0.3rem 0.3rem 0.18rem;
-  background: var(--surface);
-  color: var(--text);
-  font-size: 0.72rem;
-  line-height: 1.45;
-  text-decoration: none;
-}
-
-.creator-profile:hover {
-  color: var(--text);
-}
-
-.creator-platform {
-  display: flex;
-  gap: 0.32rem;
-  align-items: baseline;
-  font-weight: 650;
-}
-
-.creator-platform > span:last-child {
-  color: #ff2442;
-}
-
-.creator-topic {
-  color: var(--muted);
-}
-
-.creator-stats {
-  color: var(--link);
-  font-variant-numeric: tabular-nums;
-}
-
 .institution,
 .role {
   margin: 0;
@@ -282,6 +244,19 @@ a {
 .profile-links a:hover {
   color: var(--link);
   text-decoration: underline;
+}
+
+.profile-link-content {
+  display: grid;
+  gap: 0.05rem;
+  min-width: 0;
+}
+
+.profile-link-meta {
+  color: var(--faint);
+  font-size: 0.7rem;
+  font-variant-numeric: tabular-nums;
+  line-height: 1.45;
 }
 
 .detail-mark {
@@ -529,6 +504,10 @@ a {
     grid-template-columns: repeat(3, max-content);
     gap: 0.7rem 1.3rem;
     margin-top: 1.3rem;
+  }
+
+  .profile-links .social-link-item {
+    grid-column: 1 / -1;
   }
 }
 

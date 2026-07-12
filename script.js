@@ -2,11 +2,13 @@
   const root = document.documentElement;
   const toggle = document.querySelector(".language-toggle");
   const description = document.querySelector('meta[name="description"]');
+  const ogTitle = document.querySelector('meta[property="og:title"]');
   const ogDescription = document.querySelector('meta[property="og:description"]');
   const ogLocale = document.querySelector('meta[property="og:locale"]');
 
   const copy = {
     zh: {
+      title: "刘盎希",
       description:
         "刘盎希，西安交通大学人工智能专业本科生，关注多智能体决策、具身智能、博弈论与计算机视觉。",
       ogDescription: "一个不喜欢 AI 的 AI 专业学生。",
@@ -14,6 +16,7 @@
       label: "Switch to English",
     },
     en: {
+      title: "Angxi Liu",
       description:
         "Angxi Liu is an AI undergraduate at Xi’an Jiaotong University, interested in computer vision, sports, and literature.",
       ogDescription: "I’m an AI major who doesn’t like AI.",
@@ -32,7 +35,9 @@
       toggle.title = copy[next].label;
     }
 
+    document.title = copy[next].title;
     if (description) description.content = copy[next].description;
+    if (ogTitle) ogTitle.content = copy[next].title;
     if (ogDescription) ogDescription.content = copy[next].ogDescription;
     if (ogLocale) ogLocale.content = copy[next].locale;
     if (persist) {
