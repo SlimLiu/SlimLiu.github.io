@@ -1,0 +1,69 @@
+---
+layout: default
+---
+{% case page.category %}
+  {% when "literature" %}
+    {% assign category_en = "Literature" %}
+    {% assign category_zh = "文学" %}
+  {% when "ai" %}
+    {% assign category_en = "AI Notes" %}
+    {% assign category_zh = "AI 随笔" %}
+  {% else %}
+    {% assign category_en = "Essays" %}
+    {% assign category_zh = "随笔" %}
+{% endcase %}
+
+<article class="post" lang="{% if page.language == 'en' %}en{% else %}zh-CN{% endif %}">
+  <a class="back-link" href="{{ '/blog/' | relative_url }}">
+    <span aria-hidden="true">←</span>
+    <span class="i18n-zh">返回 Blog</span>
+    <span class="i18n-en">Back to Blog</span>
+  </a>
+
+  <header class="post-header">
+    <div class="post-kicker">
+      <span class="category-label">
+        <span class="i18n-zh">{{ category_zh }}</span>
+        <span class="i18n-en">{{ category_en }}</span>
+      </span>
+      <span class="language-label">{% if page.language == "en" %}EN{% else %}中文{% endif %}</span>
+    </div>
+    <h1>{{ page.title }}</h1>
+    {% if page.excerpt %}<p class="post-deck">{{ page.excerpt }}</p>{% endif %}
+    <div class="post-meta">
+      <time datetime="{{ page.date | date_to_xmlschema }}">{{ page.date | date: "%Y.%m.%d" }}</time>
+      <span class="visit-counter" data-visit-counter data-goatcounter-path="{{ page.url }}" hidden>
+        <span aria-hidden="true">·</span>
+        <span class="i18n-zh">浏览</span>
+        <span class="i18n-en">Views</span>
+        <span data-visit-count>—</span>
+      </span>
+    </div>
+  </header>
+
+  <div class="post-body">
+    {{ content }}
+  </div>
+
+  <nav class="post-pagination" aria-label="Adjacent posts">
+    {% if page.previous %}
+      <a href="{{ page.previous.url | relative_url }}">
+        <span class="pagination-direction">
+          <span class="i18n-zh">上一篇</span>
+          <span class="i18n-en">Previous</span>
+        </span>
+        <span>{{ page.previous.title }}</span>
+      </a>
+    {% endif %}
+    {% if page.next %}
+      <a href="{{ page.next.url | relative_url }}">
+        <span class="pagination-direction">
+          <span class="i18n-zh">下一篇</span>
+          <span class="i18n-en">Next</span>
+        </span>
+        <span>{{ page.next.title }}</span>
+      </a>
+    {% endif %}
+  </nav>
+</article>
+

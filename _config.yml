@@ -1,0 +1,22 @@
+title: Angxi Liu
+description: Personal website and writing by Angxi Liu.
+url: https://slimliu.github.io
+baseurl: ""
+timezone: Asia/Shanghai
+permalink: /blog/:title/
+slugify_mode: raw
+markdown: kramdown
+goatcounter_code: ""
+
+defaults:
+  - scope:
+      path: ""
+      type: posts
+    values:
+      layout: post
+
+exclude:
+  - Gemfile
+  - Gemfile.lock
+  - README.md
+

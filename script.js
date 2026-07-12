@@ -6,7 +6,7 @@
   const ogDescription = document.querySelector('meta[property="og:description"]');
   const ogLocale = document.querySelector('meta[property="og:locale"]');
 
-  const copy = {
+  const defaultCopy = {
     zh: {
       title: "刘盎希",
       description:
@@ -22,6 +22,21 @@
       ogDescription: "I’m an AI major who doesn’t like AI.",
       locale: "en_US",
       label: "切换到中文",
+    },
+  };
+
+  const copy = {
+    zh: {
+      ...defaultCopy.zh,
+      title: root.dataset.titleZh || defaultCopy.zh.title,
+      description: root.dataset.descriptionZh || defaultCopy.zh.description,
+      ogDescription: root.dataset.descriptionZh || defaultCopy.zh.ogDescription,
+    },
+    en: {
+      ...defaultCopy.en,
+      title: root.dataset.titleEn || defaultCopy.en.title,
+      description: root.dataset.descriptionEn || defaultCopy.en.description,
+      ogDescription: root.dataset.descriptionEn || defaultCopy.en.ogDescription,
     },
   };
 

@@ -1,0 +1,101 @@
+{% assign page_title_en = page.title_en | default: page.title | default: "Blog" %}
+{% assign page_title_zh = page.title_zh | default: page.title | default: "博客" %}
+{% assign description_en = page.description_en | default: page.excerpt | default: site.description | strip_html | strip_newlines %}
+{% assign description_zh = page.description_zh | default: page.excerpt | default: site.description | strip_html | strip_newlines %}
+<!doctype html>
+<html
+  lang="en"
+  data-language="en"
+  data-title-en="{{ page_title_en | escape }} · Angxi Liu"
+  data-title-zh="{{ page_title_zh | escape }} · 刘盎希"
+  data-description-en="{{ description_en | escape }}"
+  data-description-zh="{{ description_zh | escape }}"
+>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="color-scheme" content="light dark" />
+    <meta name="description" content="{{ description_en | escape }}" />
+    <meta name="author" content="Angxi Liu" />
+    <meta name="goatcounter-code" content="{{ site.goatcounter_code | escape }}" />
+    <meta property="og:type" content="{% if page.layout == 'post' %}article{% else %}website{% endif %}" />
+    <meta property="og:title" content="{{ page_title_en | escape }} · Angxi Liu" />
+    <meta property="og:description" content="{{ description_en | escape }}" />
+    <meta property="og:url" content="{{ page.url | absolute_url }}" />
+    <meta property="og:image" content="{{ '/assets/profile.jpg' | absolute_url }}" />
+    <meta property="og:locale" content="en_US" />
+    <meta property="og:locale:alternate" content="zh_CN" />
+    <link rel="canonical" href="{{ page.url | absolute_url }}" />
+    <link rel="stylesheet" href="{{ '/styles.css' | relative_url }}" />
+    <link rel="stylesheet" href="{{ '/blog.css' | relative_url }}" />
+    <title>{{ page_title_en }} · Angxi Liu</title>
+    <script>
+      (() => {
+        let saved = null;
+        try {
+          saved = localStorage.getItem("angxi-language-v2");
+        } catch (_) {
+          // The English default still works when storage is unavailable.
+        }
+        document.documentElement.dataset.language = saved === "zh" ? "zh" : "en";
+      })();
+    </script>
+  </head>
+  <body>
+    <a class="skip-link" href="#main">
+      <span class="i18n-zh">跳到正文</span>
+      <span class="i18n-en">Skip to content</span>
+    </a>
+
+    <header class="site-header">
+      <div class="header-inner">
+        <a class="home-link" href="{{ '/' | relative_url }}">
+          <span class="i18n-zh">刘盎希</span>
+          <span class="i18n-en">Angxi Liu</span>
+        </a>
+
+        <nav class="site-nav" aria-label="Page sections">
+          <a href="{{ '/' | relative_url }}">
+            <span class="i18n-zh">主页</span>
+            <span class="i18n-en">Home</span>
+          </a>
+          <a href="{{ '/blog/' | relative_url }}" {% if page.url == '/blog/' %}aria-current="page"{% endif %}>Blog</a>
+          <a href="{{ '/projects/cs180/' | relative_url }}">CS180</a>
+          <button class="language-toggle" type="button" aria-label="切换到中文">
+            <span class="i18n-zh" aria-hidden="true">EN</span>
+            <span class="i18n-en" aria-hidden="true">中</span>
+          </button>
+        </nav>
+      </div>
+    </header>
+
+    <main class="blog-shell" id="main">
+      {{ content }}
+    </main>
+
+    <footer class="blog-footer">
+      <div>
+        © <span id="current-year">2026</span>
+        <span class="i18n-zh">刘盎希</span>
+        <span class="i18n-en">Angxi Liu</span>
+        <span class="visit-counter" data-visit-counter data-goatcounter-path="TOTAL" hidden>
+          <span aria-hidden="true">·</span>
+          <span class="i18n-zh">全站浏览</span>
+          <span class="i18n-en">Site views</span>
+          <span data-visit-count>—</span>
+        </span>
+      </div>
+      <a class="write-link" href="https://app.pagescms.org/" target="_blank" rel="noreferrer">
+        <span class="i18n-zh">写作入口</span>
+        <span class="i18n-en">Write</span>
+        <span aria-hidden="true">↗</span>
+      </a>
+    </footer>
+
+    <script src="{{ '/script.js' | relative_url }}" defer></script>
+    <script src="{{ '/blog.js' | relative_url }}" defer></script>
+    <script src="{{ '/analytics.js' | relative_url }}" defer></script>
+    {% include goatcounter.html %}
+  </body>
+</html>
+

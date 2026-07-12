@@ -1,0 +1,79 @@
+media:
+  - name: blog_images
+    label: Blog Images
+    input: assets/blog
+    output: /assets/blog
+    categories: [image]
+    extensions: [jpg, jpeg, png, gif, webp]
+    rename: safe
+
+content:
+  - name: posts
+    label: Blog Posts
+    type: collection
+    path: _posts
+    format: yaml-frontmatter
+    filename:
+      template: "{year}-{month}-{day}-{primary}.md"
+      field: create
+    view:
+      fields: [title, date, category, language, published]
+      primary: title
+      sort: [date, title]
+      search: [title, excerpt, body]
+      default:
+        sort: date
+        order: desc
+    fields:
+      - name: title
+        label: Title
+        type: string
+        required: true
+      - name: date
+        label: Publish Date
+        type: date
+        required: true
+        options:
+          format: yyyy-MM-dd
+      - name: category
+        label: Category
+        type: select
+        required: true
+        default: ai
+        options:
+          values:
+            - name: literature
+              label: Literature / 文学
+            - name: ai
+              label: AI Notes / AI 随笔
+            - name: essay
+              label: Essays / 随笔
+      - name: language
+        label: Language
+        type: select
+        required: true
+        default: zh
+        options:
+          values:
+            - name: zh
+              label: 中文
+            - name: en
+              label: English
+      - name: excerpt
+        label: Summary
+        type: text
+        required: true
+      - name: published
+        label: Published
+        type: boolean
+        default: true
+      - name: body
+        label: Body
+        type: rich-text
+        required: true
+        options:
+          format: markdown
+          media: blog_images
+          rename: safe
+          switcher: true
+

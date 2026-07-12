@@ -1,3 +1,6 @@
+---
+layout: null
+---
 <!doctype html>
 <html lang="en" data-language="en">
   <head>
@@ -9,6 +12,7 @@
       content="Angxi Liu is an AI undergraduate at Xi’an Jiaotong University, interested in multi-agent decision-making, embodied intelligence, game theory, and computer vision."
     />
     <meta name="author" content="Angxi Liu" />
+    <meta name="goatcounter-code" content="{{ site.goatcounter_code | escape }}" />
     <meta property="og:type" content="profile" />
     <meta property="og:title" content="Angxi Liu" />
     <meta property="og:description" content="An AI student who does not particularly like AI." />
@@ -73,6 +77,7 @@
             <span class="i18n-zh">经历</span>
             <span class="i18n-en">Experience</span>
           </a>
+          <a href="{{ '/blog/' | relative_url }}">Blog</a>
           <a href="projects/cs180/">CS180</a>
           <button class="language-toggle" type="button" aria-label="切换到中文">
             <span class="i18n-zh" aria-hidden="true">EN</span>
@@ -378,11 +383,59 @@
           </ul>
         </section>
 
+        <section class="content-section" id="writing" aria-labelledby="writing-title">
+          <div class="section-heading-row">
+            <h2 id="writing-title">
+              <span aria-hidden="true">✍️</span>
+              <span class="i18n-zh">最近写作</span>
+              <span class="i18n-en">Latest Writing</span>
+            </h2>
+            <a class="section-link" href="{{ '/blog/' | relative_url }}">
+              <span class="i18n-zh">查看全部</span>
+              <span class="i18n-en">View all</span>
+              <span aria-hidden="true">→</span>
+            </a>
+          </div>
+
+          <div class="latest-writing-list">
+            {% for post in site.posts limit: 3 %}
+              {% case post.category %}
+                {% when "literature" %}
+                  {% assign category_en = "Literature" %}
+                  {% assign category_zh = "文学" %}
+                {% when "ai" %}
+                  {% assign category_en = "AI Notes" %}
+                  {% assign category_zh = "AI 随笔" %}
+                {% else %}
+                  {% assign category_en = "Essays" %}
+                  {% assign category_zh = "随笔" %}
+              {% endcase %}
+              <article class="latest-writing-item" lang="{% if post.language == 'en' %}en{% else %}zh-CN{% endif %}">
+                <div class="latest-writing-meta">
+                  <time datetime="{{ post.date | date_to_xmlschema }}">{{ post.date | date: "%Y.%m.%d" }}</time>
+                  <span>
+                    <span class="i18n-zh">{{ category_zh }}</span>
+                    <span class="i18n-en">{{ category_en }}</span>
+                  </span>
+                </div>
+                <h3><a href="{{ post.url | relative_url }}">{{ post.title }}</a></h3>
+                <p>{{ post.excerpt | strip_html }}</p>
+              </article>
+            {% endfor %}
+          </div>
+        </section>
+
         <footer class="site-footer">
           <p>
             © <span id="current-year">2026</span>
             <span class="i18n-zh">刘盎希</span>
             <span class="i18n-en">Angxi Liu</span>
+            <span class="visit-counter" data-visit-counter data-goatcounter-path="TOTAL" hidden>
+              <span aria-hidden="true">·</span>
+              <span class="i18n-zh">全站浏览</span>
+              <span class="i18n-en">Site views</span>
+              <span data-visit-count>—</span>
+            </span>
           </p>
           <a href="#top">
             <span class="i18n-zh">回到顶部</span>
@@ -394,5 +447,7 @@
     </main>
 
     <script src="script.js" defer></script>
+    <script src="analytics.js" defer></script>
+    {% include goatcounter.html %}
   </body>
 </html>
