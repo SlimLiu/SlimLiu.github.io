@@ -1,8 +1,7 @@
 ---
 title: 当知识不再是壁垒：我对 AI、就业与自我实现的焦虑
-slug: ai-employment-anxiety
 date: 2026-07-13
-category: ai
+category: essay
 language: zh
 excerpt: 近期的焦虑总结
 published: true
